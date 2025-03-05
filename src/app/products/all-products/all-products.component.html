@@ -1,0 +1,52 @@
+<!-- <div *ngFor="let product of productDetails" class="product-card">
+    <img [src]="product.productImageUrl" alt="{{product.productName}}" class="product-image">
+    <h4>{{product.productName}}</h4>
+    <h3>₹{{product.productSellingPrice}}</h3>
+</div>
+ -->
+
+
+
+<div class="product-container" >
+  <aside class="filter-section" *ngIf="true">
+    <h3>FILTER</h3>
+
+    <div class="filter-group">
+      <h4 (click)="showAvailability()">AVAILABILITY</h4>
+      <div *ngIf="isAvailable">
+        <label><input type="radio" name="stock" (change)="filterProducts('inStock')"> In stock ()</label><br>
+        <label><input type="radio" name="stock" (change)="filterProducts('outOfStock')"> Out of stock ()</label>
+      </div>
+      
+    </div>
+
+    <div class="filter-group">
+      <h4>PRICE</h4>
+      <input type="range" [min]="0" [max]="maxPrice" [(ngModel)]="selectedPrice" (ngModelChange)="filterProducts()">
+      <p>Price:₹{{ selectedPrice }} </p>
+    </div>
+
+  </aside>
+
+  <div class="product-list">
+    <div *ngFor="let product of filteredProducts" class="product-card"
+      (click)="navigateToProductDetails(product.productName)">
+      <ng-container >
+        <img [src]="product.productImageUrl" alt="{{product.productName}}" class="product-image">
+        <h4>{{product.productName}}</h4>
+        <h4 *ngIf="product.productStock===0" class="out-of-stock">Out of stock</h4>
+  
+        <!-- Display original price with a strikethrough if there's a discount -->
+        <h3 *ngIf="product.productDiscount>0">
+          <span style="text-decoration: line-through; color: gray;">₹{{product.productSellingPrice}}</span>
+          &nbsp;
+          <span style="color: rgb(34, 32, 32); font-weight: bold;">₹{{product.discountedSellingPrice}}</span>
+        </h3>
+  
+        <!-- If there's no discount, show the original price normally -->
+        <h3 *ngIf="product.productDiscount==0">₹{{product.productSellingPrice}}</h3>
+      </ng-container>
+     
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="cart-wrapper">
+    <!-- Cart Items Section -->
+    <div class="cart-container" *ngIf="cartItems.length>0 ;else noItems">
+        <h2>Your Cart</h2>
+
+        <div class="cart-item" *ngFor="let item of cartItems; let i=index">
+            <img  [src]="cartProductDetails[i]?.productImageUrl" [alt]="cartProductDetails[i]?.productName" class="product-image">
+
+            <div class="product-details">
+                <h3>{{ item.data.productName }}</h3>
+                <h3 *ngIf="cartProductDetails[i]?.productDiscount>0">
+                    <span style="text-decoration: line-through; color: gray;">₹{{cartProductDetails[i]?.productSellingPrice *item.data.quantity}}</span>
+                    &nbsp;
+                    <span style="color: rgb(34, 32, 32); font-weight: bold;">₹{{item.data.discountedSellingPrice}}</span>
+                  </h3>
+            
+                  <!-- If there's no discount, show the original price normally -->
+                  <h3 *ngIf="cartProductDetails[i]?.productDiscount==0">₹{{cartProductDetails[i]?.productSellingPrice *item.data.quantity}}</h3>
+
+                <div class="quantity-control">
+                    <button (click)="decreaseQuantity(item)">-</button>
+                    <input type="number" [value]="item.data.quantity" [(ngModel)]="item.data.quantity" readonly>
+                    <button (click)="increaseQuantity(item)">+</button>
+                </div>
+
+            </div>
+
+
+            <button (click)="removeCartItem(item)" class="remove-btn">Remove</button>
+        </div>
+    </div>
+
+    <!-- Cart Total Section -->
+    <div class="cart-total" *ngIf="cartItems.length>0 ">
+        <h3>Price Details</h3>
+        <div class="price-detail">
+            <span class="price-label">Total Selling Price</span>
+            <span class="price-value">₹{{totalSellingPrice}}</span>
+        </div>
+        <div class="price-detail">
+            <span class="price-label">Total Discounted Price</span>
+            <span class="price-value">- ₹{{totalDiscountedPrice}}</span>
+        </div>
+        <div class="price-detail">
+            <span class="price-label">Final Total</span>
+            <span class="price-value">₹{{finalTotal}}</span>
+        </div>
+        <button class="buy-now-btn" routerLink="/order-summary">Buy Now</button>
+    </div>
+</div>
+
+<ng-template #noItems>
+    <div class="empty-cart">
+        <img src="assets/logo/empty-cart.png" alt="Empty Cart">
+        <h2>Your cart is empty</h2>
+    </div>
+</ng-template>

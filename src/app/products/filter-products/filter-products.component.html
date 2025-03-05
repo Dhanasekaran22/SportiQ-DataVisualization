@@ -1,0 +1,39 @@
+<div class="product-list">
+
+    <div *ngIf="filterProducts.length>0">
+        <div *ngFor="let product of filterProducts" class="product-card" (click)="navigateToProductDetails(product)">
+            <img [src]="product.productImageUrl" alt="{{product.productName}}" class="product-image">
+            <h4>{{product.productName}}</h4>
+            <!-- Display original price with a strikethrough if there's a discount -->
+            <h3 *ngIf="product.productDiscount>0">
+                <span style="text-decoration: line-through; color: gray;">₹{{product.productSellingPrice}}</span>
+                &nbsp;
+                <span style="color: rgb(34, 32, 32); font-weight: bold;">₹{{product.discountedSellingPrice}}</span>
+            </h3>
+
+            <!-- If there's no discount, show the original price normally -->
+            <h3 *ngIf="product.productDiscount==0">₹{{product.productSellingPrice}}</h3>
+        </div>
+    </div>
+
+    <div *ngIf="categoryProducts.length>0">
+        <div *ngFor="let categoryProduct of categoryProducts" class="product-card"
+            (click)="navigateToProductDetails(categoryProduct)">
+            <img [src]="categoryProduct.productImageUrl" alt="{{categoryProduct.productName}}" class="product-image">
+            <h4>{{categoryProduct.productName}}</h4>
+            <!-- Display original price with a strikethrough if there's a discount -->
+            <h3 *ngIf="categoryProduct.productDiscount>0">
+                <span
+                    style="text-decoration: line-through; color: gray;">₹{{categoryProduct.productSellingPrice}}</span>
+                &nbsp;
+                <span
+                    style="color: rgb(34, 32, 32); font-weight: bold;">₹{{categoryProduct.discountedSellingPrice}}</span>
+            </h3>
+
+            <!-- If there's no discount, show the original price normally -->
+            <h3 *ngIf="categoryProduct.productDiscount==0">₹{{categoryProduct.productSellingPrice}}</h3>
+        </div>
+    </div>
+
+
+</div>

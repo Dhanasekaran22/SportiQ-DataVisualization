@@ -1,0 +1,191 @@
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    background-color: #fff; /* Change as per your theme */
+}
+
+/* Sportiq Logo (Left-Aligned) */
+.sportiq-logo {
+    flex: 1; /* Pushes everything else */
+}
+
+.sportiq-logo img {
+    margin-top: 5px;
+    margin-left: 10px;
+    height: 62px; /* Adjust size as needed */
+    transition: transform 0.3s ease-in-out;
+}
+
+.sportiq-logo img:hover {
+    transform: scale(1.1); /* Slightly enlarges on hover */
+}
+
+/* Nav Links (Centered) */
+.nav-links {
+    flex: 2; /* Centers the links */
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adds spacing between links */
+    list-style: none;
+    padding: 0;
+    
+
+}
+
+.nav-links li {
+    position: relative;
+}
+.nav-links li a {
+    text-decoration: none;
+    color: black;
+    font-family: 'Oswald', 'Montserrat', 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav-links li a.active {
+    color: red !important;
+}
+
+/* Underline Hover Animation */
+.nav-links li a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0%;
+    height: 3px;
+    background-color: black; 
+    transition: width 0.3s ease-in-out;
+}
+
+
+
+.nav-links li a:hover::after {
+    width: 100%;
+}
+
+/* Icons (Right-Aligned) */
+.logo {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.logo img {
+    width: 25px;
+    height: 25px; /* Adjust size */
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo img:hover {
+    transform: scale(1.1); /* Slightly enlarges on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .logo {
+        justify-content: center;
+        margin-top: 10px;
+    }
+}
+
+
+/* Centering the Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 165%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: black;
+    width: 1400%;
+    padding: 15px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  }
+  
+  /* Show dropdown on hover */
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Categories Container */
+  .categories {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    position: relative;
+    padding-top: 40px;
+  }
+  
+  /* Each Category */
+  .category {
+    flex: 1;
+    min-width: 120px;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  /* Category Title */
+  .category span {
+    cursor: pointer;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  /* Category Hover Effect - Changes to Violet */
+  .category:hover span {
+    color: violet;
+  }
+  
+  /* Subcategories */
+.subcategories {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .subcategories a {
+    text-decoration: none;  /* Ensures no underline */
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out; /* Smooth transition */
+  }
+  
+  /* Subcategory Hover Effect */
+  .subcategories a:hover {
+    color: red !important;  /* Turns red on hover */
+    text-decoration: none !important;  /* Ensures no underline */
+  }
+  
+  

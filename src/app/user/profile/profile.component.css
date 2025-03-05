@@ -1,0 +1,337 @@
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(to bottom, #2e2f38, #1c1d22);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+/* User Profile Section */
+.user-profile {
+    width: 88%;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #9b82cb;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+.user-profile img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid white;
+    margin-right: 15px;
+}
+
+/* User Info Container */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+/* Welcome Message */
+.user-info .welcome {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Date Display */
+.user-info .date {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 3px;
+}
+
+.user-name {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Navigation Links */
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.nav-links li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    font-size: 15px;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.815);
+}
+
+/* Fix Active State */
+.nav-links li.active-link {
+    font-weight: bold;
+    color: white !important;
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 16px;
+}
+
+.nav-links li.active-link i {
+    color: #3498db !important; /* Blue highlight for active icon */
+}
+
+/* Icon Styling */
+.nav-links li i {
+    font-size: 20px;
+    transition: color 0.3s;
+}
+
+/* Hover Effect */
+.nav-links li:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-links li:hover i {
+    color: #3498db; /* Blue hover color */
+}
+
+/* Logout Button */
+.nav-links li.logout i {
+    color: #ff5a5f;
+}
+
+.nav-links li.logout:hover {
+    color: #ff5a5f !important;
+}
+
+/* Notification Badge */
+.badge {
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+/* Content Area */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    width: calc(100% - 290px);
+    min-height: 100vh;
+    background: #f4f4f4;
+    /* position: fixed; */
+}
+
+/* Back to Home Link */
+.back-to-home {
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Back to Home Link */
+.back-to-home {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.home-link {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.home-link i {
+    font-size: 18px;
+}
+
+.home-link:hover {
+    color:#3498db;
+}
+
+/* Modal for Logout Confirmation */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 320px;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px; /* Ensure same size */
+    height: 24px;
+    font-size: 22px; /* Ensure same font size */
+    cursor: pointer;
+    color: #555;
+    background: none;
+    border: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Make it round */
+    transition: all 0.3s ease-in-out;
+}
+
+.modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #ff5a5f;
+}
+
+/* Ensure Product Review Cancel (X) Button is the Same */
+.review-modal .modal-close {
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #555;
+    background: none;
+    border: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+}
+
+.review-modal .modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #ff5a5f;
+}
+
+/* Modal Message */
+.modal-content p {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    
+}
+
+/* Buttons */
+.modal-content button {
+    padding: 10px 18px;
+    margin: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    font-size: 14px;
+}
+
+/* Yes Button */
+.modal-content button:first-child {
+    background: #ff5a5f;
+    color: white;
+}
+
+.modal-content button:first-child:hover {
+    background: #d43f44;
+}
+
+/* No Button */
+.modal-content button:last-child {
+    background: #ccc;
+}
+
+.modal-content button:last-child:hover {
+    background: #aaa;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ✅ Responsive Sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+
+    .nav-links li {
+        font-size: 13px;
+        padding: 12px 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 180px;
+    }
+
+    .content {
+        margin-left: 180px;
+        width: calc(100% - 180px);
+    }
+
+    .nav-links li {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+
+    .user-profile img {
+        width: 60px;
+        height: 60px;
+    }
+}

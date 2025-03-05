@@ -1,0 +1,79 @@
+<div class="orders-container">
+  <h2 class="orders-title">My Orders</h2>
+
+  <div *ngIf="displayPurchasedProducts.length > 0; else noOrders" class="order-list">
+    <div *ngFor="let order of displayPurchasedProducts" class="order-card">
+
+      <!-- Product Image -->
+      <div class="order-image">
+        <img [src]="order.imageUrl" alt="Product Image" />
+      </div>
+
+      <!-- Order Details -->
+      <div class="order-details">
+        <h3 class="product-name">{{ order.productName }}</h3>
+        <p class="order-id">Order ID: <b>{{ order.orderId }}</b></p>
+        <p class="price">Price: {{ order.discountedSellingPrice | currency:'INR'}}</p>
+        <p class="quantity">Quantity: {{ order.quantity }}</p>
+        <p class="order-date">Delivered on {{ order.deliverDate }} at {{ order.deliverTime }}</p>
+
+        <!-- Status -->
+        <div class="order-actions">
+          <span class="status">Payment type: <b>COD</b></span>
+        </div>
+      </div>
+
+      <!--already reviewed-->
+      <span *ngIf="reviewedProducts.has(order.productName)" class="reviewed-text">
+        Reviewed
+      </span>
+      
+      <!-- Review Link  -->
+      <span *ngIf="!reviewedProducts.has(order.productName)" class="write-review"
+        (click)="openReviewDialog(order)">Write a review here</span>
+
+    </div>
+  </div>
+
+  <!-- No Orders Found -->
+  <ng-template #noOrders>
+    <div class="no-orders">
+      <img src="assets\logo\no orders.jpg" alt="No Orders" />
+      <p>You have no orders yet.</p>
+      <a routerLink="/all-products" class="btn shop-btn">Start Shopping</a>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Review Dialog (Shown Conditionally) -->
+<div *ngIf="isReviewDialogOpen" class="review-overlay" (click)="closeReviewDialog()"></div>
+<div *ngIf="isReviewDialogOpen" class="review-dialog">
+  <span class="close-btn" (click)="closeReviewDialog()">×</span> <!-- Close Button -->
+  <h3>Rate the Product</h3>
+
+  <!-- Star Rating -->
+  <div class="stars">
+    <span *ngFor="let star of stars; let i = index" class="star" [ngClass]="{'filled': i < selectedRating}"
+      (click)="selectRating(i + 1)">
+      ★
+    </span>
+  </div>
+
+  <!-- Validation Message for Rating -->
+
+  <p *ngIf="ratingError" class="error-message">Please select a rating.</p>
+
+
+  <!-- Feedback Textarea -->
+  <input type="text" class="feedback-input" placeholder="Write your review..." [(ngModel)]="reviewText">
+
+  <!-- Validation Message for Feedback -->
+
+  <p *ngIf="feedbackError" class="error-message">Please enter feedback.</p>
+
+  <!-- Buttons -->
+  <div class="review-buttons">
+    <button class="submit-btn" (click)="submitReview()">Submit</button>
+    <button class="cancel-btn" (click)="closeReviewDialog()">Cancel</button>
+  </div>
+</div>

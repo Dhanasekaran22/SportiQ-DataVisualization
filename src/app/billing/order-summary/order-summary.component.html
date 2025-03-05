@@ -1,0 +1,67 @@
+<div class="container">
+  
+  <!-- Left: Order Summary -->
+  <div class="order-summary">
+    <h2>Order Summary</h2>
+    
+    <div *ngFor="let product of cartProductDetails; let i=index" class="product-card">
+      <img [src]="product.data.productImageUrl" alt="{{ product.data.productName }}" class="product-image">
+      <div class="product-info">
+        <h3>{{ product.productName }}</h3>
+        <p>Quantity: {{cartItems[i].data?.quantity}}</p>
+        <p>Price: ₹{{ cartItems[i].data.discountedSellingPrice }}</p>
+      </div>
+    </div>
+
+    <!-- Total Price Section -->
+    <div class="total-price">
+      <p><strong>Total: ₹{{ finalTotal }}</strong></p>
+    </div>
+  </div>
+
+  <!-- Right: Address Selection & Add New Address -->
+  <div class="address-section">
+    <h2>Select Delivery Address</h2>
+
+    <!-- Show available addresses -->
+    <div *ngFor="let address of userAddresses" class="address-card">
+      <input type="radio" name="selectedAddress" [checked]="address.data.isActive" (change)="selectAddress(address)">
+      <span>{{ address.data.address }}, {{ address.data.city }}, {{address.data.state}}</span>
+    </div>
+
+    <!-- Add New Address Button -->
+    <button (click)="openNewAddressForm()">Add New Address</button>
+
+    <!-- New Address Form -->
+    <div *ngIf="showNewAddressForm" class="new-address-form">
+      <h3>Add New Address</h3>
+      <form #addressForm="ngForm" (ngSubmit)="addNewAddress()" novalidate>
+        
+        <input type="text" name="address" [(ngModel)]="newAddress.address" placeholder="Address" required #address="ngModel">
+        <div *ngIf="address.invalid && address.touched" class="error">Address is required</div>
+
+        <input type="text" name="city" [(ngModel)]="newAddress.city" placeholder="City" required #city="ngModel">
+        <div *ngIf="city.invalid && city.touched" class="error">City is required</div>
+
+        <input type="text" name="state" [(ngModel)]="newAddress.state" placeholder="State" required #state="ngModel">
+        <div *ngIf="state.invalid && state.touched" class="error">State is required</div>
+
+        <input type="tel" name="phoneNo" [(ngModel)]="newAddress.phoneNo" placeholder="Phone No" pattern="^[0-9]{10}$" required #phoneNo="ngModel">
+        <div *ngIf="phoneNo.invalid && phoneNo.touched" class="error">
+          <span *ngIf="phoneNo.errors?.['required']">Phone number is required</span>
+          <span *ngIf="phoneNo.errors?.['pattern']">Phone number must be 10 digits</span>
+        </div>
+
+        <button type="submit" [disabled]="addressForm.invalid">Add Address</button>
+        <button type="button" (click)="showNewAddressForm = false">Cancel</button>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Place Order Button -->
+<div class="place-order-container">
+  <button (click)="placeOrder()" [disabled]="!selectedAddress" >Place Order</button>
+</div>   

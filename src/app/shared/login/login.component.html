@@ -1,0 +1,59 @@
+<div class="container">
+    <div class="login-top">
+        <h1>Welcome Back</h1>
+        <p>Please enter your details</p>
+
+        <div class="login-form">
+            <form #loginData="ngForm" (ngSubmit)="checkUserCredentials(loginData)" novalidate>
+
+                <!--Email Field-->
+                <label for="email">Email Address</label>
+                <input type="email" name="loggedEmail" #loggedEmail="ngModel" [(ngModel)]="loggedUser.email"
+                    placeholder="Enter Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" required>
+
+                <!-- Email Validation Error Messages -->
+                <div class="text-danger"
+                    *ngIf="loggedEmail.invalid &&(loggedEmail.touched || loggedEmail.dirty) || isFormSubmitted">
+                    <span *ngIf="loggedEmail.errors?.['required']">Email is required</span>
+                    <!--required validation for empty field-->
+                    <span *ngIf="loggedEmail.errors?.['pattern']">Enter a valid email</span>
+                    <!--pattern validation for email format-->
+                </div>
+
+                <div class="text-danger" *ngIf="!loggedEmail.errors && emailError">
+                    <span>{{emailError}}</span>
+                    <!-- In TS, when the form is submitted, checks if the entered email exists in the DB -->
+                </div>
+
+
+                <!--Password Field-->
+                <label for="password">Password</label>
+                <input type="password" name="loggedPassword" #loggedPassword="ngModel" [(ngModel)]="loggedUser.password"
+                    placeholder="Enter Password" minlength="8" required>
+
+                <!-- Password Validation Error Messages -->
+                <div class="text-danger"
+                    *ngIf="loggedPassword.invalid && (loggedPassword.touched || loggedPassword.dirty) || isFormSubmitted">
+                    <span *ngIf="loggedPassword.errors?.['required']">Password is required</span>
+                    <!-- required validation for empty password -->
+                    <span *ngIf="loggedPassword.errors?.['minlength']">Minimum 8 characters needed</span>
+                    <!--Minimum length validation for password-->
+                </div>
+
+                <div class="text-danger" *ngIf="!loggedPassword.errors && passwordError">
+                    <span>{{passwordError}}</span>
+                    <!-- In TS, when the form is submitted, checks if the entered password matches the DB entry -->
+                </div>
+
+                <!--login button-->
+                <button type="submit">Log in</button>
+            </form>
+
+            <!-- Link to Register Page -->
+            <div>
+                <p>Don't have an account? <a routerLink="/register">Sign up</a></p> <!-- It navigate to register page-->
+            </div>
+        </div>
+
+    </div>
+</div>

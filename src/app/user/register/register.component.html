@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="inner-container">
+
+    <!-- Top section with heading and sub-heading -->
+    <div class="top">
+      <h1>Sign up now</h1>
+      <p>Create a new account</p>
+    </div>
+
+    <div class="details">
+      <form #registerForm="ngForm" novalidate (ngSubmit)="submitForm(registerForm)">
+
+        <!-- Name Field -->
+        <label for="name"> Name</label>
+        <input type="text" name="name" #name="ngModel" [(ngModel)]="user.customerName" placeholder="Name" minlength="3"
+          required>
+
+        <!-- Name Validation Error Messages -->
+        <div class="text-danger" *ngIf="name.invalid && (name.touched || name.dirty) || isFormSubmitted">
+          <span *ngIf="name.errors?.['required']">This is required</span> <!-- required field validation -->
+          <span *ngIf="name.errors?.['minlength']">Min 3 Characters Needed</span> <!-- Minimum length validation -->
+        </div>
+
+
+        <!-- Email Field -->
+        <label for="email">Email address</label>
+        <input type="email" name="email" #email="ngModel" [(ngModel)]="user.email"
+          pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" (input)="emailExistsOrNot()" placeholder="Email Address"
+          required>
+
+
+        <!-- Email Validation Error Messages -->
+        <div class="text-danger" *ngIf="email.invalid && (email.touched || email.dirty) || isFormSubmitted">
+          <span *ngIf="email.errors?.['required']">This is required</span> <!-- required field validation -->
+          <span *ngIf="email.errors?.['pattern']">Enter the valid email</span> <!-- email format validation -->
+        </div>
+
+        <!-- Custom error message for email existence -->
+        <div class="text-danger" *ngIf="emailExists">
+          <span>Email already exists</span> <!-- checks if the email already exists in the database -->
+        </div>
+
+
+        <!-- Password Field -->
+        <label for="password"> Password</label>
+        <input type="password" name="userPassword" #userPassword="ngModel" [(ngModel)]="user.password"
+          placeholder="Password" minlength="8" (input)="validatePassword()" required>
+
+        <!-- Password Validation Criteria -->
+        <div *ngIf="userPassword.value?.length > 0 ; else requiredPassword">
+          <ul>
+            <li [ngClass]="{'invalid':!isPasswordValidLength}">Minimum 8 characters</li>
+            <!-- password length validation -->
+            <li [ngClass]="{'invalid':!hasSpecialChar}">Minimum 1 special character</li>
+            <!-- special character validation -->
+            <li [ngClass]="{'invalid':!hasCapitalLetter}">Minimum 1 capital letter</li>
+            <!-- capital letter validation -->
+            <li [ngClass]="{'invalid':!hasNumber}">Minimum 1 number</li> <!-- number validation -->
+          </ul>
+        </div>
+
+        <!-- Password Required Error Message -->
+        <ng-template #requiredPassword>
+          <div class="text-danger">
+            <span *ngIf="userPassword.errors?.['required'] && (userPassword.touched || isFormSubmitted )">
+              Password is required</span> <!-- required password validation -->
+          </div>
+        </ng-template>
+
+
+        <!-- Confirm Password Field -->
+        <label for="confirmPassWord">Confirm password</label>
+        <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" #confirm_Password="ngModel"
+          placeholder="Confirm Password" (input)="checkPasswordMatch()" required>
+
+        <!-- Confirm Password Validation -->
+        <div class="text-danger"
+          *ngIf="confirm_Password.invalid && (confirm_Password.touched || confirm_Password.dirty) || isFormSubmitted">
+          <span *ngIf="confirm_Password.errors?.['required']">Confirm password is required</span>
+          <!-- confirm password required validation -->
+        </div>
+
+        <!-- Password Match Error Message -->
+        <div class="text-danger">
+          <span *ngIf="!checkPasswordMatch() && !confirm_Password.errors?.['required']">Passwords do not Match</span>
+          <!-- password mismatch validation -->
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Sign up</button>
+
+      </form>
+    </div>
+
+    <!-- Bottom section with the login link -->
+    <div class="bottom">
+      <p>Already have an account? <a routerLink="/login">Sign in</a></p> <!-- Link to navigate to the login page -->
+    </div>
+  </div>
+
+  

@@ -1,0 +1,119 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 25px;
+    font-family: 'Poppins', 'Roboto', 'Inter', sans-serif;
+  
+  }
+  .inner-container{
+    place-self: center
+  }
+  
+  .top h1 {
+    margin: 0px;
+    font-size: 32px;
+  }
+  
+  .top p {
+    color: #A8A8A8;
+    margin-top: 2px;
+  }
+  
+  .top{
+    margin-right:72px;
+  }
+  
+  label {
+    display: block;
+    margin-top: 20px;
+    font-size: 16px;
+    font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 5px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    
+  }
+  
+  input::placeholder{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 13px;
+    color: #A8A8A8;
+  }
+  .details{
+    width: 325px;
+  }
+
+
+  ul {
+    list-style-type: none; 
+    padding-left: 0; 
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  ul li {
+    margin-bottom: 5px;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  
+  ul li::before {
+    content: '✔️'; 
+    margin-right: 8px;
+  }
+  
+  ul li.invalid::before {
+    content: '❌'; 
+    color: red;
+  }
+  
+
+  .details button {
+    width: 106%;
+    padding:8px;
+    margin-top: 15px;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor:pointer;
+  }
+  
+  .details button:hover{
+    background-color: #202020bb;
+  }
+  
+  .details button:active{
+    background-color: black;
+    transform: scale(.98);
+  
+  }
+  
+  .bottom a{
+    text-decoration: none;
+    color:#0080ff;
+    margin-left: 5px;
+  }
+  
+  .bottom a:hover{
+    text-decoration: underline;
+  }
+  
+  .bottom {
+    font-size: 14px;
+    justify-self: center;
+    margin-top: 25px ;
+  }
+  
+  .text-danger{
+    color:red;
+    font-size: 13px;
+    margin-top: 4px;
+  }

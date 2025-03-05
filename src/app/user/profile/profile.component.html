@@ -1,0 +1,67 @@
+<div class="whole-container">
+
+    <div class="sidebar" *ngIf="!isProfilePage">
+        <!-- User Profile Section -->
+        <div class="user-profile">
+            <img src="assets/logo/avatar.jpg" alt="User Logo" class="rounded-image">
+            <div class="user-info">
+                <div class="welcome"> {{ loggedUser?.name}}</div>
+                <div class="date">{{ currentDate }}</div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links">
+            <li routerLink="/profile/dashboard" routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{exact: true}">
+                <i class="fa fa-tachometer-alt "></i> Dashboard
+
+            </li>
+            <li routerLink="/profile/analytics" routerLinkActive="active-link"
+                [routerLinkActiveOptions]="{exact: true}">
+
+                <i class="fa fa-chart-line"></i> Analytics
+
+            </li>
+            <li routerLink="/profile/orders" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+                <i class="fa fa-box-open"></i> Orders
+
+            </li>
+            <li class="logout" (click)="confirmLogout()">
+                <i class="fa fa-sign-out"></i> Logout
+            </li>
+        </ul>
+        
+        <!-- Back to Home Link -->
+        <div class="back-to-home">
+            <a routerLink="/" class="home-link">
+                <i class="fa fa-home"></i> Back to Home
+            </a>
+        </div>
+
+    </div>
+
+
+
+    <!-- Right Content Area -->
+    <div class="content">
+        <router-outlet></router-outlet>
+    </div>
+
+
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal" *ngIf="showLogoutModal">
+    <div class="modal-content">
+        <button class="modal-close" (click)="cancelLogout()">x</button>
+        <p>Are you sure you want to logout?</p>
+        <button (click)="logout()">Yes</button>
+        <button (click)="cancelLogout()">No</button>
+    </div>
+</div>
+
+<!-- If User is Not Logged In -->
+<div *ngIf="!loggedUser">
+    <h2>Click here to <a routerLink="/login">login</a></h2>
+</div>
