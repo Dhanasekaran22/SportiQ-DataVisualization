@@ -4,15 +4,22 @@
   gap: 25px;
   padding: 20px;
   align-items: flex-start;
+  padding-top: 90px;
 }
 
+.filter-container{
+  width: 25%;
+}
 /* Sidebar filter section */
 .filter-section {
-  width: 280px;
+  width:280px;
   background: #fff;
+  margin-top: 80px;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top:0;
 }
 
 .filter-section h3 {
@@ -48,6 +55,7 @@ input[type="range"] {
 
 /* Product list styles */
 .product-list {
+  width: 75%;
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

@@ -236,6 +236,10 @@ export class AppService {
     return this.http.get<any>(url, { headers: this.headers });
   }
 
-  
+  //get all ratings
+  getAllRatingProducts(){
+    const url=`${this.baseURL}/_design/Views/_view/productreviews_by_email?include_docs=true`
+    return this.http.get<any>(url, { headers: this.headers });
+  }
 
 }

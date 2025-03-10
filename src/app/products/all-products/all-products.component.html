@@ -8,26 +8,28 @@
 
 
 <div class="product-container" >
-  <aside class="filter-section" *ngIf="true">
-    <h3>FILTER</h3>
-
-    <div class="filter-group">
-      <h4 (click)="showAvailability()">AVAILABILITY</h4>
-      <div *ngIf="isAvailable">
-        <label><input type="radio" name="stock" (change)="filterProducts('inStock')"> In stock ()</label><br>
-        <label><input type="radio" name="stock" (change)="filterProducts('outOfStock')"> Out of stock ()</label>
+  <div class="filter-container">
+    <aside class="filter-section" *ngIf="true">
+      <h3>FILTER</h3>
+  
+      <div class="filter-group">
+        <h4 (click)="showAvailability()">AVAILABILITY</h4>
+        <div *ngIf="isAvailable">
+          <label><input type="radio" name="stock" (change)="filterProducts('inStock')"> In stock ()</label><br>
+          <label><input type="radio" name="stock" (change)="filterProducts('outOfStock')"> Out of stock ()</label>
+        </div>
+        
       </div>
-      
-    </div>
-
-    <div class="filter-group">
-      <h4>PRICE</h4>
-      <input type="range" [min]="0" [max]="maxPrice" [(ngModel)]="selectedPrice" (ngModelChange)="filterProducts()">
-      <p>Price:₹{{ selectedPrice }} </p>
-    </div>
-
-  </aside>
-
+  
+      <div class="filter-group">
+        <h4>PRICE</h4>
+        <input type="range" [min]="0" [max]="maxPrice" [(ngModel)]="selectedPrice" (ngModelChange)="filterProducts()">
+        <p>Price:₹{{ selectedPrice }} </p>
+      </div>
+  
+    </aside>
+  </div>
+  
   <div class="product-list">
     <div *ngFor="let product of filteredProducts" class="product-card"
       (click)="navigateToProductDetails(product.productName)">

@@ -20,13 +20,14 @@ export class AnalyticsComponent implements OnInit {
   categoryView: any[] = [];
   subCategoryView: any[] = [];
   cartView: any[] = [];
+  reviewView: any[] = [];
 
   //prepare Raw data 
   preparedRawData: ChartDataType[] = [];
+  ratingPerProduct: { productName: string, averageRating: number }[] = [];
 
   //extracted data from the raw data
   chartData: any[] = [];
-
 
   ngOnInit(): void {
     this.loadAllData();
@@ -53,16 +54,20 @@ export class AnalyticsComponent implements OnInit {
       ),
       subcategories: this.sportiQService.getAllSubcategories().pipe(
         catchError(error => this.handleError('Subcategories', error))
+      ),
+      review: this.sportiQService.getAllRatingProducts().pipe(
+        catchError(error => this.handleError('ratings', error))
       )
 
     }).subscribe({
-      next: ({ orderDetails, orders, products, categories, subcategories, cartViews }) => {
+      next: ({ orderDetails, orders, products, categories, subcategories, cartViews, review }) => {
         this.orderDetailView = orderDetails ? orderDetails.rows.map((row: any) => row.doc) : [];
         this.orderView = orders ? orders.rows.map((row: any) => row.doc) : [];
         this.cartView = cartViews ? cartViews.rows.map((row: any) => row.doc) : [];
         this.productView = products ? products.rows.map((row: any) => row.doc) : [];
         this.categoryView = categories ? categories.rows.map((row: any) => row.doc) : [];
         this.subCategoryView = subcategories ? subcategories.rows.map((row: any) => row.doc) : [];
+        this.reviewView = review ? review.rows.map((row: any) => row.doc) : [];
 
         console.log("Order Detail View:", this.orderDetailView);
         console.log("Order View:", this.orderView);
@@ -70,8 +75,10 @@ export class AnalyticsComponent implements OnInit {
         console.log("Product View:", this.productView);
         console.log("Category View:", this.categoryView);
         console.log("Subcategory View:", this.subCategoryView);
+        console.log("review view", this.reviewView);
 
         this.prepareRawData();
+        this.getAllProductReview();
       }
     });
   }
@@ -82,6 +89,7 @@ export class AnalyticsComponent implements OnInit {
     alert(`Error on while fetching ${apiName}`);
     return of(null); // Return empty observable to prevent `forkJoin()` from failing completely
   }
+
 
   //prepare data in a format for proceeding with chart
   prepareRawData() {
@@ -111,8 +119,34 @@ export class AnalyticsComponent implements OnInit {
         });
       }
     });
-
     console.log("prepared Raw data", this.preparedRawData);
+  }
+
+  //get the reviews per product
+  getAllProductReview() {
+    let ratingMap = new Map<string, { total: number, count: number }>();
+
+    this.reviewView.forEach((dataInReviewView: any) => {
+
+      let productName = dataInReviewView.data.productName;
+      let rating = dataInReviewView.data.rating;
+
+      if (ratingMap.has(productName)) {
+        let productData = ratingMap.get(productName)!;
+        productData.total += rating;
+        productData.count += 1;
+      }
+      else {
+        ratingMap.set(productName, { total: rating, count: 1 });
+      }
+    });
+
+    this.ratingPerProduct = Array.from(ratingMap.entries()).map(([productName, data]) => ({
+      productName,
+      averageRating: parseFloat((data.total / data.count).toFixed(1)) //to fixed return string
+    }));
+
+    console.log("rating per product", this.ratingPerProduct);
     this.getExtractedData();
   }
 
@@ -124,11 +158,14 @@ export class AnalyticsComponent implements OnInit {
       sellingPrice: number,
       discountedSellingPrice: number,
       availableStock: number,
-      orderedPeople: string[]
+      discount:number,
+      orderedPeople: string[],
+      averageRating: number
     }>();
 
     this.preparedRawData.forEach(item => {
-      const { productName, sellingPrice, discountedSellingPrice, availableStock, orderId, combinedName } = item;
+      
+      const { productName, sellingPrice, discountedSellingPrice, availableStock, orderId, combinedName,discount } = item;
 
       if (!groupedData.has(productName)) {
         groupedData.set(productName, {
@@ -137,19 +174,28 @@ export class AnalyticsComponent implements OnInit {
           discountedSellingPrice,
           combinedName,
           availableStock,
-          orderedPeople: [orderId]
+          discount,
+          orderedPeople: [orderId],
+          averageRating: 0
         });
       }
       else {
         groupedData.get(productName)?.orderedPeople.push(orderId);
       }
     });
-    this.chartData = Array.from(groupedData.values()).map(data => ({
-      ...data,
-      orderedPeople: data.orderedPeople.length
-    }));
-    console.log("Extracted Data: ", this.chartData);
+    //convert grouped data to array
+    this.chartData = Array.from(groupedData.values()).map(data => {
 
+      //find the matching product for rating      
+      const ratingData = this.ratingPerProduct.find(r => r.productName === data.productName);
+
+      return {
+        ...data,
+        orderedPeople: data.orderedPeople.length,
+        averageRating: ratingData ? ratingData?.averageRating : 0
+      };
+    });
+    console.log("Extracted Data: ", this.chartData);
   }
 
 
@@ -158,7 +204,7 @@ export class AnalyticsComponent implements OnInit {
   selectedObjects: string[] = [];
 
   productXField = 'Products Name';
-  productYFields = ['Selling Price', 'Discounted Selling Price', 'Available Stock'];
+  productYFields = [ 'Discounted Selling Price', 'Available Stock','Discounts (%)','Rating','Selling Price'];
   orderYField = 'Ordered People';
 
   availableXField: string = '';
@@ -207,12 +253,14 @@ export class AnalyticsComponent implements OnInit {
   }
 
 
-  fieldMapping: { [key: string]: keyof ChartDataType | 'orderedPeople' } = {
+  fieldMapping: { [key: string]: keyof ChartDataType | 'orderedPeople'|'averageRating' } = {
     "Products Name": "productName",
     "Selling Price": "sellingPrice",
     "Discounted Selling Price": "discountedSellingPrice",
     "Available Stock": "availableStock",
+    "Discounts (%)":'discount',
     "Ordered People": "orderedPeople",
+    "Rating":"averageRating",
   }
 
   onChartSelection() {
@@ -310,10 +358,14 @@ export class AnalyticsComponent implements OnInit {
       return null;
     }
 
-    return this.chartData.map(d => ({
+    const processedData = this.chartData.map(d => ({
       xValue: d[xKey] || "Unknown",
       yValue: d[yKey] || 0,
     }));
+
+    console.log("processed chart data", processedData);
+
+    return processedData;
   }
 
 
@@ -435,52 +487,52 @@ export class AnalyticsComponent implements OnInit {
       d3.select("#chartContainer").select("svg").remove();
       return;
     }
-  
+
     const yKey = this.fieldMapping[this.selectedYField];
-  
+
     if (!yKey) {
       console.error("Invalid Field Mapping:", this.selectedYField);
       return;
     }
-  
+
     // Process data for the pie chart
     const data = this.chartData.map(d => ({
       label: d[this.fieldMapping[this.selectedXField]] || "Unknown",
       value: d[yKey] || 0,
     }));
-  
+
     console.log("Processed Data for Pie Chart:", data);
-  
+
     const container = d3.select("#chartContainer").node() as HTMLElement;
     const width = container.getBoundingClientRect().width || 600;
     const height = 400;
     const margin = { top: 50, right: 30, bottom: 70, left: 50 };
-  
-    const radius = Math.min(width, height) / 2 - Math.max(margin.top, margin.bottom)+40;
-  
+
+    const radius = Math.min(width, height) / 2 - Math.max(margin.top, margin.bottom) + 40;
+
     // Initialize SVG and append a group for the pie chart
     const svg = this.initializeSVG(width, height, margin);
     const chartGroup = svg.append("g")
-      .attr("transform", `translate(${width / 2-90}, ${height / 2})`);
-  
+      .attr("transform", `translate(${width / 2 - 90}, ${height / 2})`);
+
     const color = d3.scaleOrdinal(d3.schemeCategory10);
-  
+
     const pie = d3.pie<{ label: string; value: number }>()
       .value(d => d.value)
       .sort(null);
-  
+
     const arc = d3.arc<d3.PieArcDatum<{ label: string; value: number }>>()
       .innerRadius(0)
       .outerRadius(radius);
-  
+
     const tooltip = this.setupTooltip();
-  
+
     const arcs = chartGroup.selectAll(".arc")
       .data(pie(data))
       .enter()
       .append("g")
       .attr("class", "arc");
-  
+
     arcs.append("path")
       .attr("d", arc)
       .attr("fill", (d, i) => color(i.toString()))
@@ -495,26 +547,26 @@ export class AnalyticsComponent implements OnInit {
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
       });
-  
 
-  
+
+
     // Add legend in the top-right corner
     const legend = svg.append("g")
       .attr("class", "legend")
-      .attr("transform", `translate(${width - margin.right - 250}, ${margin.top-50})`);
-  
+      .attr("transform", `translate(${width - margin.right - 250}, ${margin.top - 50})`);
+
     const legendItemHeight = 20; // Height of each legend item
     const legendSpacing = 5; // Spacing between legend items
-  
+
     data.forEach((d, i) => {
       const legendItem = legend.append("g")
         .attr("transform", `translate(0, ${i * (legendItemHeight + legendSpacing)})`);
-  
+
       legendItem.append("rect")
         .attr("width", 13)
         .attr("height", 13)
         .attr("fill", color(i.toString()));
-  
+
       legendItem.append("text")
         .attr("x", 20)
         .attr("y", 10)

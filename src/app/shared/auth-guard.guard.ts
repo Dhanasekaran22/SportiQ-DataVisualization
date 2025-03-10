@@ -4,6 +4,7 @@ import { AppService } from '../service/app.service';
 
 export const authGuardGuard: CanActivateFn = (route, state) => {
   
+
   const sportiQService=inject(AppService);
   const router=inject(Router);
 

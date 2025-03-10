@@ -3,6 +3,7 @@
     height: 100vh; /* Full viewport height */
     overflow: hidden;
     position: relative;
+    margin-top: 75px;
 }
 
 .content-video {

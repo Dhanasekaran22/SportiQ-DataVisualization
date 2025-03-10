@@ -1,6 +1,7 @@
 .product-list {
     display: flex;
     justify-content: center;
+    margin-top:70px ;
 }
 
 .product-gap {
