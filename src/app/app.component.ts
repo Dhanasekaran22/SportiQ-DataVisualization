@@ -9,8 +9,6 @@ import { Router } from '@angular/router';
 export class AppComponent {
   isPaymentSuccessPage=false;
   isProfilePage=false;
-  isLoading = false; // New variable for the loading spinner
-
 
   constructor(private router:Router){
     this.router.events.subscribe(()=>{

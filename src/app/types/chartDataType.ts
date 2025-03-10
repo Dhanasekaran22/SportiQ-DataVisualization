@@ -9,5 +9,5 @@ export interface ChartDataType{
     categoryName:string,
     combinedName:string,
     orderDate:string,
-    AvailableStock:number
+    availableStock:number
 }

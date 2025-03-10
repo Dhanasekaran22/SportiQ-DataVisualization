@@ -1,1 +1,51 @@
-<p>analytics works!</p>
+<!-- Object selection -->
+<div class="selection-container">
+    <label for="objects">Select Objects:</label>
+    <div class="object-selection">
+        <input type="checkbox" [value]="'Products'" (change)="toggleObject('Products')"> Products
+        <input type="checkbox" [value]="'Orders'" (change)="toggleObject('Orders')"> Orders
+    </div>
+</div>
+
+<!-- X-axis field selection (Shown only if Product is selected) -->
+<div *ngIf="availableXField" class="axis-container">
+    <div style="flex-grow: 1;">
+        <label for="xAxis">Select X-axis:</label>
+        <select [(ngModel)]="selectedXField">
+            <option value="" disabled>Select X-axis</option>
+            <option [value]="availableXField">{{ availableXField }}</option>
+        </select>
+        <p *ngIf="!selectedXField" class="error-message">Please select an X-axis field first.</p>
+    </div>
+
+    <!-- Y-axis and Chart Type selection in the same row -->
+    <div style="display: flex; gap: 20px; flex-grow: 1;">
+        <!-- Y-axis Dropdown -->
+        <div>
+            <label for="yAxis">Select Y-axis:</label>
+            <select [(ngModel)]="selectedYField" [disabled]="!selectedXField" (ngModelChange)="onChartSelection()">
+                <option value="" disabled>Select Y-axis</option>
+                <option *ngFor="let field of availableYFields" [value]="field">{{ field }}</option>
+            </select>
+            <p *ngIf="!selectedXField" class="error-message">Please select an X-axis field first.</p>
+        </div>
+
+        <!-- Chart Type Dropdown -->
+        <div *ngIf="selectedXField && selectedYField">
+            <label for="chartType">Select Chart Type:</label>
+            <select [(ngModel)]="selectedChartType" (ngModelChange)="onChartSelection()">
+                <option value="" disabled>Select Chart Type</option>
+                <option *ngFor="let chart of charts" [value]="chart">{{ chart }}</option>
+            </select>
+            <p *ngIf="!selectedChartType && selectedYField" class="error-message">Please select a chart type.</p>
+        </div>
+    </div>
+</div>
+
+<p *ngIf="!productSelected && selectedObjects.includes('Orders')" class="error-message">
+    Please select "Product" as an object to enable X-axis selection.
+</p>
+
+<div class="visualization">
+    <div id="chartContainer"></div>
+</div>
