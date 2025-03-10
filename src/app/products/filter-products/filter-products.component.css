@@ -1,0 +1,41 @@
+.product-list {
+    display: flex;
+    justify-content: center;
+}
+
+.product-gap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns per row */
+    gap: 60px;
+    justify-content: start;
+    max-width: 900px;
+    width: 100%;
+    padding: 20px;
+}
+
+.product-card {
+    background: #fff;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%; /* Ensures equal height for all cards */
+    
+}
+
+.product-image {
+    width: auto; /* Ensures the image takes the full width of the card */
+    height: 200px; /* Fixed height for consistency */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f8f8f8; /* Light background for images with transparency */
+    margin-bottom: 12px;
+  }
+  
+
+h4, h3 {
+    margin: 10px 0;
+}
