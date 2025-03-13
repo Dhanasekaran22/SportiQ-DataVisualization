@@ -1,7 +1,7 @@
 .video-section {
-    width: 100vw;  /* Full viewport width */
+    /* width: 100vw;  Full viewport width */
     height: 100vh; /* Full viewport height */
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
     margin-top: 75px;
 }

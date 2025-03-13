@@ -123,6 +123,11 @@ export class AppService {
     return this.http.get<any>(url, { headers: this.headers })
   }
 
+   //get the purchased products count
+   getPurchasedProductsCount() {
+    const url = `${this.baseURL}/_design/Views/_view/addtocart_by_productname?reduce=true&group=true`;
+    return this.http.get<any>(url, { headers: this.headers })
+  }
 
   /* Directly call subscribe() inside the function itself, meaning the HTTP requests execute immediately 
     when getCartProductDetails(cartItems) is called.*/
@@ -241,5 +246,6 @@ export class AppService {
     const url=`${this.baseURL}/_design/Views/_view/productreviews_by_email?include_docs=true`
     return this.http.get<any>(url, { headers: this.headers });
   }
+  
 
 }

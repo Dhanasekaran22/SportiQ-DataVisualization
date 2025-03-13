@@ -21,7 +21,7 @@ export class RegisterComponent {
     password: '',
     createdDate: undefined,
     createdAt: undefined,
-    type: 'register',
+    type: 'customer',
 
   };
 

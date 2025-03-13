@@ -1,0 +1,18 @@
+
+    <!-- Trending Products Grid -->
+    <div *ngIf="topProductDetails.length > 0" class="products-grid">
+      <div *ngFor="let product of topProductDetails" class="product-card" (click)="navigateToProductDetails(product)">
+        <img [src]="product.data.productImageUrl" [alt]="product.data.productName" class="product-image" />
+  
+        <div class="product-info" >
+          <h3 class="product-name">{{ product.productName }}</h3>
+          <p class="product-description">{{ product.data.productDescription.slice(0,80)}}...</p>
+          <p class="product-price">
+            <span class="original-price" *ngIf="product.data.productDiscount > 0">₹{{ product.data.productSellingPrice }}</span>
+            <span class="discounted-price">₹{{ product.data.discountedSellingPrice }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+ 
+  

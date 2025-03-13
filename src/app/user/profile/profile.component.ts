@@ -32,6 +32,7 @@ export class ProfileComponent {
     this.sportiQService.logout();
     alert("Logged out successfully");
     this.showLogoutModal = false;
+    localStorage.removeItem('currentUserPurchasedProducts')
     this.router.navigate(['/login']);
   }
 

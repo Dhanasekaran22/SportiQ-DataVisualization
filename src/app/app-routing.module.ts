@@ -14,6 +14,7 @@ import { DashboardComponent } from './user/profile/dashboard/dashboard.component
 import { AnalyticsComponent } from './user/profile/analytics/analytics.component';
 import { OrdersComponent } from './user/profile/orders/orders.component';
 import { authGuardGuard } from './shared/auth-guard.guard';
+import { TrendingProductsComponent } from './user/trending-products/trending-products.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,22 +23,23 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    canActivate:[authGuardGuard],
+    canActivate: [authGuardGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'analytics', component: AnalyticsComponent },
       { path: 'orders', component: OrdersComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: '', redirectTo: 'orders', pathMatch: 'full' }
     ]
   },
   { path: 'all-products', component: AllProductsComponent },
+  { path: 'trending', component: TrendingProductsComponent },
   { path: 'all-products/:productName', component: ProductDetailsComponent },
   { path: 'pages/:category', component: FilterProductsComponent },
   { path: 'collections/:category/:subCategory', component: FilterProductsComponent },
   { path: 'product/:productName', component: ProductDetailsComponent },
-  { path: 'add-to-cart', component: AddToCartComponent},
-  { path: 'order-summary', component: OrderSummaryComponent},
-  { path: 'payment-success', component: PaymentSuccessComponent}
+  { path: 'add-to-cart', component: AddToCartComponent },
+  { path: 'order-summary', component: OrderSummaryComponent },
+  { path: 'payment-success', component: PaymentSuccessComponent }
 ];
 
 @NgModule({

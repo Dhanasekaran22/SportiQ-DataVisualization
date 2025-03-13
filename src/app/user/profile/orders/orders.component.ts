@@ -125,7 +125,7 @@ export class OrdersComponent implements OnInit {
   //set the display products
   private setDisplayProducts(): void {
 
-    this.displayPurchasedProducts=[];
+    this.displayPurchasedProducts = [];
 
     this.purchasedCartItems.forEach((dataInCart) => {
       const orderId = this.orderLine.find((o: any) => dataInCart._id === o.data.cartId)?.data?.orderId;
@@ -146,15 +146,15 @@ export class OrdersComponent implements OnInit {
       this.displayPurchasedProducts.push(prepareData)
     });
 
-  // Sort orders by latest delivered date & time
-  this.displayPurchasedProducts.sort((a, b) => {
-    const dateA = new Date(`${a.deliverDate} ${a.deliverTime}`).getTime();
-    const dateB = new Date(`${b.deliverDate} ${b.deliverTime}`).getTime();
-    return dateB - dateA; // Latest first
-  });
-
-  console.log("Sorted display ordered products:", this.displayPurchasedProducts);
-}
+    // Sort orders by latest delivered date & time
+    this.displayPurchasedProducts.sort((a, b) => {
+      const dateA = new Date(`${a.deliverDate} ${a.deliverTime}`).getTime();
+      const dateB = new Date(`${b.deliverDate} ${b.deliverTime}`).getTime();
+      return dateB - dateA; // Latest first
+    });
+    localStorage.setItem('currentUserPurchasedProducts',JSON.stringify(this.displayPurchasedProducts));
+    console.log("Sorted display ordered products:", this.displayPurchasedProducts);
+  }
 
   openReviewDialog(order: any) {
     this.currentOrder = order;
@@ -165,8 +165,8 @@ export class OrdersComponent implements OnInit {
     this.isReviewDialogOpen = false;
     this.selectedRating = 0; // Reset rating
     this.reviewText = ''; // Clear review text
-    this.ratingError=false;
-    this.feedbackError=false;
+    this.ratingError = false;
+    this.feedbackError = false;
   }
 
   selectRating(rating: number) {
@@ -177,35 +177,35 @@ export class OrdersComponent implements OnInit {
     this.ratingError = this.selectedRating === 0; // True if rating is not selected
     this.feedbackError = !this.reviewText.trim(); // True if feedback is empty
 
-  
-     // Stop submission if validation fails
-  if (this.ratingError || this.feedbackError) {
-    return;
-  }
 
-  const reviewData={
-    _id:`productreview_2_${uuidv4()}`,
-    data:{
-      productName:this.currentOrder.productName,
-      email:this.loggedUser.email,
-      rating:this.selectedRating,
-      review:this.reviewText,
-      date:new Date().toISOString().split('T')[0],
-      type:'review',
+    // Stop submission if validation fails
+    if (this.ratingError || this.feedbackError) {
+      return;
     }
-  }
 
-  this.sportiQService.createOrder(reviewData).subscribe({
-    next:(response)=>{
-      alert("Review submitted successfully");
-      this.loadReviewProducts();
-    },
-    error:(error)=>{
-      alert("error on while submitting the review");
-      console.log("error on while submitting the review",error);
-      
+    const reviewData = {
+      _id: `productreview_2_${uuidv4()}`,
+      data: {
+        productName: this.currentOrder.productName,
+        email: this.loggedUser.email,
+        rating: this.selectedRating,
+        review: this.reviewText,
+        date: new Date().toISOString().split('T')[0],
+        type: 'review',
+      }
     }
-  })
+
+    this.sportiQService.createOrder(reviewData).subscribe({
+      next: (response) => {
+        alert("Review submitted successfully");
+        this.loadReviewProducts();
+      },
+      error: (error) => {
+        alert("error on while submitting the review");
+        console.log("error on while submitting the review", error);
+
+      }
+    })
     console.log('Review Submitted:', {
       orderId: this.currentOrder.orderId,
       rating: this.selectedRating,
@@ -216,18 +216,18 @@ export class OrdersComponent implements OnInit {
   }
 
   //get the current user reviewed products
-  loadReviewProducts(){
+  loadReviewProducts() {
     this.sportiQService.getReviewsByEmail(this.loggedUser.email).subscribe({
-      next:(response)=>{
-        if(response.rows.length===0) return
-        this.reviewedProducts=new Set(response.rows.map((row:any)=>`${row.doc.data.productName}`));
-        console.log("reviewed products",this.reviewedProducts);
+      next: (response) => {
+        if (response.rows.length === 0) return
+        this.reviewedProducts = new Set(response.rows.map((row: any) => `${row.doc.data.productName}`));
+        console.log("reviewed products", this.reviewedProducts);
       },
-      error:(error)=>{
+      error: (error) => {
         alert("error on while fetching reviewed products");
-        console.log("error on while fetching reviewed products",error);
+        console.log("error on while fetching reviewed products", error);
       }
     });
   }
-  
+
 }

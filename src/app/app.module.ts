@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ProductsModule } from './products/products.module';
 import { BillingModule } from './billing/billing.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -19,14 +20,17 @@ import { BillingModule } from './billing/billing.module';
     BrowserModule,
     UserModule,
     AppRoutingModule,
-    UserModule,
     SharedModule,
     BillingModule,
     ProductsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    
   ],
-  providers: [],
+  providers: [
+    provideAnimationsAsync()
+    
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

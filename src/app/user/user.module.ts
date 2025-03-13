@@ -11,8 +11,9 @@ import { AddToCartComponent } from './add-to-cart/add-to-cart.component';
 import { DashboardComponent } from './profile/dashboard/dashboard.component';
 import { AnalyticsComponent } from './profile/analytics/analytics.component';
 import { OrdersComponent } from './profile/orders/orders.component';
-
-
+import { TrendingProductsComponent } from './trending-products/trending-products.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 @NgModule({
   declarations: [
     NavbarComponent,
@@ -22,12 +23,16 @@ import { OrdersComponent } from './profile/orders/orders.component';
     AddToCartComponent,
     DashboardComponent,
     AnalyticsComponent,
-    OrdersComponent
+    OrdersComponent,
+    TrendingProductsComponent
   ],
   imports: [
     CommonModule,
     UserRoutingModule,
-    FormsModule
+    FormsModule,
+    MatIconModule,
+    MatCardModule
+  
   ],
   exports:[
     NavbarComponent,
