@@ -31,6 +31,7 @@
 .error-message {
     color: red;
     font-size: 12px;
+    margin: 0px;
     margin-top: 5px;
 }
 
@@ -59,6 +60,31 @@ select:focus {
     background-color: #fff;
     outline: none;
 }
+
+
+.compare {
+    display: flex;
+    align-items: center; /* Ensures vertical centering */
+    gap: 5px;
+}
+
+.compare-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 12px; /* Ensures it doesn't shrink */
+}
+
+.compare label {
+    color: #030303b6; /* Text color */
+    font-weight: bold;
+}
+
+.compare input[type="radio"] {
+    cursor: pointer;
+    accent-color: #007bff; /* Radio button color */
+}
+
 
 .visualization {
     width: 100%;

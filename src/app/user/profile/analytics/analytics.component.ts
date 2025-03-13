@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../../service/app.service';
-import { catchError, forkJoin, of } from 'rxjs';
+import { catchError, filter, forkJoin, of } from 'rxjs';
 import { ChartDataType } from '../../../types/chartDataType';
 import * as d3 from 'd3';
 
@@ -113,7 +113,7 @@ export class AnalyticsComponent implements OnInit {
           discount: product?.data.productDiscount,
           subCategoryName: subCategory?.data.subcategoryName,
           categoryName: category?.data.categoryName,
-          combinedName: `${category?.data.categoryName} ${subCategory?.data.subcategoryName}`,
+          combinedName: `${category?.data.categoryName} - ${subCategory?.data.subcategoryName}`,
           orderDate: order?.data.orderDate,
           availableStock: product.data.productStock
         });
@@ -152,20 +152,21 @@ export class AnalyticsComponent implements OnInit {
 
   //Extract the needed data
   getExtractedData() {
+
     const groupedData = new Map<string, {
       productName: string,
       combinedName: string,
       sellingPrice: number,
       discountedSellingPrice: number,
       availableStock: number,
-      discount:number,
+      discount: number,
       orderedPeople: string[],
       averageRating: number
     }>();
 
     this.preparedRawData.forEach(item => {
-      
-      const { productName, sellingPrice, discountedSellingPrice, availableStock, orderId, combinedName,discount } = item;
+
+      const { productName, sellingPrice, discountedSellingPrice, availableStock, orderId, combinedName, discount } = item;
 
       if (!groupedData.has(productName)) {
         groupedData.set(productName, {
@@ -198,13 +199,12 @@ export class AnalyticsComponent implements OnInit {
     console.log("Extracted Data: ", this.chartData);
   }
 
-
   //prepare data for the template charts
   allObjects = ['Products', 'Orders'];
   selectedObjects: string[] = [];
 
   productXField = 'Products Name';
-  productYFields = [ 'Discounted Selling Price', 'Available Stock','Discounts (%)','Rating','Selling Price'];
+  productYFields = ['Discounted Selling Price', 'Available Stock', 'Discounts (%)', 'Rating', 'Selling Price'];
   orderYField = 'Ordered People';
 
   availableXField: string = '';
@@ -213,9 +213,18 @@ export class AnalyticsComponent implements OnInit {
   selectedXField = '';
   selectedYField = '';
 
+  //compare field
+  selectedCompareField: string | null = '';
+
   selectedChartType = '';
   charts = ['Bar Chart', 'Line Chart', 'Pie Chart']
 
+
+  //filter products
+  selectedSubCategoryName:string='';
+  filterProducts: any[] = [];
+
+  //for error message
   get productSelected(): boolean {
     return this.selectedObjects.includes('Products');
   }
@@ -249,22 +258,55 @@ export class AnalyticsComponent implements OnInit {
     this.selectedXField = '';
     this.selectedYField = '';
     this.selectedChartType = '';
+    this.selectedCompareField = '';
     this.onChartSelection();
   }
 
+  alternativeCompareField(): string | null {
+    if (this.selectedYField === 'Discounted Selling Price')
+      return 'Selling Price';
 
-  fieldMapping: { [key: string]: keyof ChartDataType | 'orderedPeople'|'averageRating' } = {
+    else if (this.selectedYField === 'Selling Price')
+      return 'Discounted Selling Price';
+
+    return null;
+  }
+
+
+  onYFieldChange() {
+    this.selectedCompareField = null; // Un tick the radio button when Y-axis field changes
+    this.onChartSelection();
+  }
+
+  //check the chart is pie chart or not
+  shouldNotPieChart() {
+    return this.selectedChartType == "Pie Chart"
+  }
+
+  getFilterProductsBasedOnCombinedName() {
+    console.log("selected combined Name",this.selectedSubCategoryName);
+    
+    this.filterProducts = this.chartData.map((data) => data.combinedName);
+    console.log("Filtered Products", this.filterProducts);
+  }
+
+  fieldMapping: { [key: string]: keyof ChartDataType | 'orderedPeople' | 'averageRating' } = {
     "Products Name": "productName",
     "Selling Price": "sellingPrice",
     "Discounted Selling Price": "discountedSellingPrice",
     "Available Stock": "availableStock",
-    "Discounts (%)":'discount',
+    "Discounts (%)": 'discount',
     "Ordered People": "orderedPeople",
-    "Rating":"averageRating",
+    "Rating": "averageRating",
   }
 
   onChartSelection() {
     d3.select('#chartContainer').selectAll('*').remove(); // Clear previous chart
+
+    if (this.selectedYField !== 'Selling Price' && this.selectedYField !== 'Discounted Selling Price') {
+      this.selectedCompareField = null;
+    }
+
     if (this.selectedChartType === 'Bar Chart' && this.selectedXField && this.selectedYField) {
       this.drawBarChart();
     } else if (this.selectedChartType === 'Line Chart' && this.selectedXField && this.selectedYField) {
@@ -274,6 +316,7 @@ export class AnalyticsComponent implements OnInit {
       this.drawPieChart();
     }
   }
+
   // Initialize SVG container
   initializeSVG(width: number, height: number, margin: { top: number, right: number, bottom: number, left: number }) {
     return d3.select("#chartContainer")
@@ -304,35 +347,39 @@ export class AnalyticsComponent implements OnInit {
   }
 
   // Setup legend
-  setupLegend(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
-    width: number, margin: { top: number, right: number }, selectedYField: string) {
+  setupLegend(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>, width: number, margin: { top: any; right: any; bottom?: number; left?: number; }, yField: string, compareField: string | null = null) {
     const legend = svg.append("g")
-      .attr("class", "legend")
-      .attr("transform", `translate(${width - margin.right - 100}, ${margin.top - 60})`);
+      .attr("transform", `translate(${width - margin.right - 100}, ${margin.top})`);
 
-    legend.append("text")
-      .attr("x", 0)
-      .attr("y", 0)
-      .style("font-size", "16px")
-      .style("font-weight", "bold");
-
-    const legendItem = legend.append("g").attr("transform", "translate(0, 20)");
-
-    legendItem.append("rect")
-      .attr("width", 13)
-      .attr("height", 13)
+    legend.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
       .attr("fill", "steelblue");
 
-    legendItem.append("text")
-      .attr("x", 25)
-      .attr("y", 13)
-      .style("font-size", "14px")
-      .text(selectedYField);
+    legend.append("text")
+      .attr("x", 20)
+      .attr("y", 12)
+      .text(yField);
+
+    if (compareField) {
+      legend.append("rect")
+        .attr("y", 20)
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr("fill", "orange");
+
+      legend.append("text")
+        .attr("x", 20)
+        .attr("y", 32)
+        .text(compareField);
+    }
   }
+
 
   // Setup axes
   setupAxes(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>, xScale: d3.ScaleBand<string> | d3.ScalePoint<string>,
     yScale: d3.ScaleLinear<number, number>, height: number, margin: { top: number, right: number, bottom: number, left: number }) {
+
     svg.selectAll("g.axis").remove();
 
     svg.append('g')
@@ -349,24 +396,34 @@ export class AnalyticsComponent implements OnInit {
       .call(d3.axisLeft(yScale).ticks(6));
   }
 
-  processChartData(selectedXField: string, selectedYField: string) {
-    const xKey = this.fieldMapping[selectedXField];
-    const yKey = this.fieldMapping[selectedYField];
+  processChartData(xField: string, yField: string) {
+    if (!this.chartData || !this.fieldMapping[xField] || !this.fieldMapping[yField]) return null;
 
-    if (!xKey || !yKey) {
-      console.error("Invalid Field Mapping:", selectedXField, selectedYField);
-      return null;
-    }
+    const xKey = this.fieldMapping[xField];
+    const yKey = this.fieldMapping[yField];
+    const compareKey = this.selectedCompareField ? this.fieldMapping[this.selectedCompareField] : null;
 
     const processedData = this.chartData.map(d => ({
-      xValue: d[xKey] || "Unknown",
-      yValue: d[yKey] || 0,
+      xValue: d[xKey] ?? "Unknown",
+      yValue: d[yKey] ?? 0,
+      compareValue: compareKey ? d[compareKey] : null,
+      orderedPeople: d.orderedPeople ?? 0
+
     }));
+    /*
+    const topOrderedData = processedData.sort((a, b) => b.orderedPeople - a.orderedPeople).slice(0, 10)
+    SonarQube is giving the warning because .sort() changes the original array (processedData), which can 
+    cause unintended issues elsewhere in your code.
+    */
+    const topOrderedData = processedData.slice().sort((a, b) => b.orderedPeople - a.orderedPeople)
+      .slice(0, 10)
 
-    console.log("processed chart data", processedData);
+    console.log("processed data", topOrderedData);
 
-    return processedData;
+    return topOrderedData;
+
   }
+
 
 
   drawBarChart() {
@@ -374,7 +431,7 @@ export class AnalyticsComponent implements OnInit {
     if (!data) return;
 
     const container = d3.select("#chartContainer").node() as HTMLElement;
-    const width = container.getBoundingClientRect().width || 600;
+    const width = container?.getBoundingClientRect()?.width || 600;
     const height = 400;
     const margin = { top: 50, right: 30, bottom: 70, left: 50 };
 
@@ -385,27 +442,60 @@ export class AnalyticsComponent implements OnInit {
       .range([margin.left, width - margin.right])
       .padding(0.7);
 
+    let yMax = d3.max(data, d => Number(d.yValue)) ?? 0;
+    if (this.selectedCompareField) {
+      const compareMax = d3.max(data, d => Number(d.compareValue)) ?? 0;
+      yMax = Math.max(yMax, compareMax);
+    }
+
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => Number(d.yValue)) ?? 0])
+      .domain([0, yMax])
       .range([height - margin.bottom, margin.top]);
 
     this.setupAxes(svg, xScale, yScale, height, margin);
-
     const tooltip = this.setupTooltip();
 
-    svg.selectAll(".bar")
+    // Bars for the main Y-field
+    svg.selectAll(".bar-primary")
       .data(data)
       .enter()
       .append("rect")
-      .attr("class", "bar")
-      .attr("x", d => xScale(String(d.xValue)) ?? 0)
-      .attr("y", d => yScale(Number(d.yValue)))
-      .attr("width", xScale.bandwidth())
-      .attr("height", d => height - margin.bottom - yScale(Number(d.yValue)))
+      .attr("class", "bar-primary")
+      .attr("x", d => xScale(String(d.xValue)) ?? 0)  //xValue is the x label data which is in the processChartData()
+      .attr("y", height - margin.bottom)              //fr animation, the y value initially at the bottom
+      .attr("width", xScale.bandwidth() / (this.selectedCompareField ? 2 : 1))
+      .attr("height", 0)
       .attr("fill", "steelblue")
-      .on("mouseover", (event, d) => {
+      .transition()
+      .duration(800)
+      .attr("y", d => yScale(Number(d.yValue)))
+      .attr("height", d => height - margin.bottom - yScale(Number(d.yValue)));
+
+    // Bars for the comparison Y-field
+    if (this.selectedCompareField) {
+      svg.selectAll(".bar-compare")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar-compare")
+        .attr("x", d => (xScale(String(d.xValue)) ?? 0) + xScale.bandwidth() / 2)
+        .attr("y", height - margin.bottom)
+        .attr("width", xScale.bandwidth() / 2)
+        .attr("height", 0)
+        .attr("fill", "orange")
+        .transition()
+        .duration(800)
+        .attr("y", d => yScale(Number(d.compareValue)))
+        .attr("height", d => height - margin.bottom - yScale(Number(d.compareValue)));
+    }
+
+    // Tooltip
+    svg.selectAll(".bar-primary, .bar-compare")
+      .on("mouseover", (event, d: any) => {
         tooltip.style("visibility", "visible")
-          .html(`${d.xValue} <br> ${d.yValue}`);
+          .html(`${d.xValue} <br> 
+            ${this.selectedYField}: ${d.yValue} <br>
+             ${this.selectedCompareField ?? ''} ${d.compareValue ?? ''}`);
       })
       .on("mousemove", (event) => {
         tooltip.style("top", `${event.pageY - 40}px`)
@@ -413,10 +503,9 @@ export class AnalyticsComponent implements OnInit {
       })
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
-      })
-      .on("click", (event, d) => alert(`Clicked on: ${d.xValue}, Value: ${d.yValue}`));
+      });
 
-    this.setupLegend(svg, width, margin, this.selectedYField);
+    this.setupLegend(svg, width, margin, this.selectedYField, this.selectedCompareField ?? null);
   }
 
 
@@ -425,7 +514,7 @@ export class AnalyticsComponent implements OnInit {
     if (!data) return;
 
     const container = d3.select("#chartContainer").node() as HTMLElement;
-    const width = container.getBoundingClientRect().width || 600;
+    const width = container?.getBoundingClientRect()?.width || 600;
     const height = 400;
     const margin = { top: 50, right: 30, bottom: 70, left: 50 };
 
@@ -436,39 +525,75 @@ export class AnalyticsComponent implements OnInit {
       .range([margin.left, width - margin.right])
       .padding(0.5);
 
+    let yMax = d3.max(data, d => Number(d.yValue)) ?? 0;
+    if (this.selectedCompareField) {
+      const compareMax = d3.max(data, d => Number(d.compareValue)) ?? 0;
+      yMax = Math.max(yMax, compareMax);
+    }
+
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, d => Number(d.yValue)) ?? 0])
+      .domain([0, yMax])
       .range([height - margin.bottom, margin.top]);
 
     this.setupAxes(svg, xScale, yScale, height, margin);
-
     const tooltip = this.setupTooltip();
 
-    const line = d3.line<{ xValue: string; yValue: number }>()
+    // Line generator
+    const lineGenerator = d3.line<any>()
       .x(d => xScale(String(d.xValue)) ?? 0)
       .y(d => yScale(Number(d.yValue)))
       .curve(d3.curveMonotoneX);
 
+    // Draw the main line
     svg.append("path")
       .datum(data)
-      .attr("class", "line")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-width", 2)
-      .attr("d", line);
+      .attr("d", lineGenerator);
 
-    svg.selectAll(".dot")
+    // Draw points on the main line
+    svg.selectAll(".dot-primary")
       .data(data)
       .enter()
       .append("circle")
-      .attr("class", "dot")
+      .attr("class", "dot-primary")
       .attr("cx", d => xScale(String(d.xValue)) ?? 0)
       .attr("cy", d => yScale(Number(d.yValue)))
       .attr("r", 5)
-      .attr("fill", "steelblue")
-      .on("mouseover", (event, d) => {
+      .attr("fill", "steelblue");
+
+    // If a comparison field is selected, draw the second line
+    if (this.selectedCompareField) {
+      const compareLineGenerator = d3.line<any>()
+        .x(d => xScale(String(d.xValue)) ?? 0)
+        .y(d => yScale(Number(d.compareValue)))
+        .curve(d3.curveMonotoneX);
+
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "orange")
+        .attr("stroke-width", 2)
+        .attr("d", compareLineGenerator);
+
+      // Draw points on the comparison line
+      svg.selectAll(".dot-compare")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "dot-compare")
+        .attr("cx", d => xScale(String(d.xValue)) ?? 0)
+        .attr("cy", d => yScale(Number(d.compareValue)))
+        .attr("r", 5)
+        .attr("fill", "orange");
+    }
+
+    // Tooltip for both lines
+    svg.selectAll(".dot-primary, .dot-compare")
+      .on("mouseover", (event, d: any) => {
         tooltip.style("visibility", "visible")
-          .html(`${d.xValue} <br> ${d.yValue}`);
+          .html(`${d.xValue} <br> ${this.selectedYField}: ${d.yValue} <br> ${this.selectedCompareField ?? ''} ${d.compareValue || ''}`);
       })
       .on("mousemove", (event) => {
         tooltip.style("top", `${event.pageY - 40}px`)
@@ -478,11 +603,14 @@ export class AnalyticsComponent implements OnInit {
         tooltip.style("visibility", "hidden");
       });
 
-    this.setupLegend(svg, width, margin, this.selectedYField);
+    // Add a legend for comparison
+    this.setupLegend(svg, width, margin, this.selectedYField, this.selectedCompareField);
   }
+
 
   //draw pie chart
   drawPieChart() {
+    this.selectedCompareField = null; // Un tick the radio button when Y-axis field changes
     if (!this.selectedYField) {
       d3.select("#chartContainer").select("svg").remove();
       return;
@@ -495,13 +623,10 @@ export class AnalyticsComponent implements OnInit {
       return;
     }
 
-    // Process data for the pie chart
     const data = this.chartData.map(d => ({
       label: d[this.fieldMapping[this.selectedXField]] || "Unknown",
       value: d[yKey] || 0,
     }));
-
-    console.log("Processed Data for Pie Chart:", data);
 
     const container = d3.select("#chartContainer").node() as HTMLElement;
     const width = container.getBoundingClientRect().width || 600;
@@ -510,7 +635,6 @@ export class AnalyticsComponent implements OnInit {
 
     const radius = Math.min(width, height) / 2 - Math.max(margin.top, margin.bottom) + 40;
 
-    // Initialize SVG and append a group for the pie chart
     const svg = this.initializeSVG(width, height, margin);
     const chartGroup = svg.append("g")
       .attr("transform", `translate(${width / 2 - 90}, ${height / 2})`);
@@ -533,13 +657,22 @@ export class AnalyticsComponent implements OnInit {
       .append("g")
       .attr("class", "arc");
 
+    // Animate the arcs
     arcs.append("path")
       .attr("d", arc)
       .attr("fill", (d, i) => color(i.toString()))
-      .on("mouseover", (event, d) => {
-        tooltip.style("visibility", "visible")
-          .html(`${d.data.label} <br> ${d.data.value}`);
-      })
+      .transition()
+      .duration(1000) // Animation duration
+      .attrTween("d", function (d) {
+        const interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+        return (t: number) => arc(interpolate(t))!;
+      });
+
+    // Tooltip events
+    arcs.on("mouseover", (event, d) => {
+      tooltip.style("visibility", "visible")
+        .html(`${d.data.label} <br> ${d.data.value}`);
+    })
       .on("mousemove", (event) => {
         tooltip.style("top", `${event.pageY - 40}px`)
           .style("left", `${event.pageX + 10}px`);
@@ -548,15 +681,13 @@ export class AnalyticsComponent implements OnInit {
         tooltip.style("visibility", "hidden");
       });
 
-
-
-    // Add legend in the top-right corner
+    // Add legend
     const legend = svg.append("g")
       .attr("class", "legend")
       .attr("transform", `translate(${width - margin.right - 250}, ${margin.top - 50})`);
 
-    const legendItemHeight = 20; // Height of each legend item
-    const legendSpacing = 5; // Spacing between legend items
+    const legendItemHeight = 20;
+    const legendSpacing = 5;
 
     data.forEach((d, i) => {
       const legendItem = legend.append("g")

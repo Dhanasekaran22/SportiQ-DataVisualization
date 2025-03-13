@@ -1,0 +1,41 @@
+.dashboard-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.metric-card {
+  flex: 1;
+  text-align: center;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metric-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.metric-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #3f51b5;
+}
+
+.metric-text h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.metric-text p {
+  margin: 5px 0 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}

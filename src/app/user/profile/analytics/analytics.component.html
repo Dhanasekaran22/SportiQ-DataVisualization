@@ -1,6 +1,6 @@
 <!-- Object selection -->
 <div class="selection-container">
-    <label for="objects">Select Objects:</label>
+    <label for="objects">Select Objects : </label>
     <div class="object-selection">
         <input type="checkbox" [value]="'Products'" (change)="toggleObject('Products')"> Products
         <input type="checkbox" [value]="'Orders'" (change)="toggleObject('Orders')"> Orders
@@ -10,7 +10,7 @@
 <!-- X-axis field selection (Shown only if Product is selected) -->
 <div *ngIf="availableXField" class="axis-container">
     <div style="flex-grow: 1;">
-        <label for="xAxis">Select X-axis:</label>
+        <label for="xAxis">Select X-axis : </label>
         <select [(ngModel)]="selectedXField">
             <option value="" disabled>Select X-axis</option>
             <option [value]="availableXField">{{ availableXField }}</option>
@@ -22,8 +22,8 @@
     <div style="display: flex; gap: 20px; flex-grow: 1;">
         <!-- Y-axis Dropdown -->
         <div>
-            <label for="yAxis">Select Y-axis:</label>
-            <select [(ngModel)]="selectedYField" [disabled]="!selectedXField" (ngModelChange)="onChartSelection()">
+            <label for="yAxis">Select Y-axis : </label>
+            <select [(ngModel)]="selectedYField" [disabled]="!selectedXField" (ngModelChange)="onYFieldChange()">
                 <option value="" disabled>Select Y-axis</option>
                 <option *ngFor="let field of availableYFields" [value]="field">{{ field }}</option>
             </select>
@@ -45,6 +45,25 @@
 <p *ngIf="!productSelected && selectedObjects.includes('Orders')" class="error-message">
     Please select "Product" as an object to enable X-axis selection.
 </p>
+
+
+<div class="filter products">
+<label for="filter">Filter products </label>
+<select [(ngModel)]="selectedSubCategoryName" (ngModelChange)="getFilterProductsBasedOnCombinedName()">
+    <option value="" disabled>Select the subcategory Name</option>
+    <option *ngFor="let data of chartData" [value]="data.combinedName">{{data.combinedName}}</option>
+</select>
+</div>
+
+<div class="compare-container" *ngIf="!shouldNotPieChart()">
+    <div *ngIf="alternativeCompareField() && selectedChartType" class="compare">
+        <label for="compare">Compare :</label>
+        <input type="radio" name="compareField" [value]="alternativeCompareField()" [(ngModel)]="selectedCompareField"
+            (ngModelChange)="onChartSelection()">
+        {{alternativeCompareField()}}
+    </div>
+</div>
+
 
 <div class="visualization">
     <div id="chartContainer"></div>
