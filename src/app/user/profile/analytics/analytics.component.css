@@ -62,27 +62,45 @@ select:focus {
 }
 
 
+
+/* Ensure Filter and Compare are in a single row */
+.filter-compare-container {
+    display: flex;
+    align-items: center; /* Align vertically */
+    gap: 20px; /* Space between Filter and Compare */
+    margin-top: 10px; /* Adjust spacing from elements above */
+    flex-wrap: wrap; /* Ensure responsiveness */
+}
+
+/* Compare Container */
+.compare-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Filter Products */
+.filter.products label{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+}
+
+/* Compare Section */
 .compare {
     display: flex;
-    align-items: center; /* Ensures vertical centering */
+    align-items: center;
     gap: 5px;
 }
 
-.compare-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    margin-top: 12px; /* Ensures it doesn't shrink */
-}
-
 .compare label {
-    color: #030303b6; /* Text color */
+    color: #030303b6;
     font-weight: bold;
 }
 
 .compare input[type="radio"] {
     cursor: pointer;
-    accent-color: #007bff; /* Radio button color */
+    accent-color: #007bff; /* Custom color for radio button */
 }
 
 

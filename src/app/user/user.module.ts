@@ -14,6 +14,7 @@ import { OrdersComponent } from './profile/orders/orders.component';
 import { TrendingProductsComponent } from './trending-products/trending-products.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { AnalyzeProductsComponent } from './profile/analyze-products/analyze-products.component';
 @NgModule({
   declarations: [
     NavbarComponent,
@@ -24,7 +25,8 @@ import { MatIconModule } from '@angular/material/icon';
     DashboardComponent,
     AnalyticsComponent,
     OrdersComponent,
-    TrendingProductsComponent
+    TrendingProductsComponent,
+    AnalyzeProductsComponent
   ],
   imports: [
     CommonModule,

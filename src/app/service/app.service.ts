@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { RegisterUsers } from '../types/registeredUsersType';
 import { v4 as uuidv4 } from 'uuid';
 import { AddToCartType } from '../types/addToCartType';
-import { forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ResponseType } from '../types/responseType';
 
@@ -37,6 +37,9 @@ export class AppService {
   //Store user data in local storage after login
   setUserData(user: { name: string, email: string }) {
     localStorage.setItem('loggedInUser', JSON.stringify(user));
+
+    //get the local storage cart count for the logged user
+    this.loadCartCount();
   }
 
   //Retrieved logged in user data
@@ -52,7 +55,9 @@ export class AppService {
 
   //logout the current user
   logout() {
+
     localStorage.removeItem('loggedInUser');
+    this.cartCountSubject.next(0);
   }
 
   //fetch all category in category view 
@@ -83,7 +88,7 @@ export class AppService {
   }
 
   //get the particular product using productName
-  getProductsByProductName(productName: string) {
+  getProductsByProductName(productName: string) {    
     const url = `${this.baseURL}/_design/Views/_view/products_by_productname?key="${productName}"&include_docs=true`
     return this.http.get<any>(url, { headers: this.headers });
   }
@@ -100,10 +105,69 @@ export class AppService {
     return false;
   }
 
-  //store the cart items based on the customerId In DB
-  addToCart(data: AddToCartType) {
-    return this.http.post(this.baseURL, { _id: `addtocart_2_${uuidv4()}`, data: data }, { headers: this.headers });
+  cartCountSubject = new BehaviorSubject<number>(0);
+  cartCount$ = this.cartCountSubject.asObservable();
+
+  //load the cart items count
+  loadCartCount() {
+
+    const user = this.getUserData();
+    if (!user)
+      return;
+    
+    let cartCount = 0;
+    const cartKey = user.email;
+
+    this.getCurrentUserCartItems(cartKey).subscribe({
+      next: (response) => {
+        cartCount = response.length;
+        console.log("in load cart count service", cartCount);
+
+        //set in the behavior subject
+        this.cartCountSubject.next(cartCount);
+      }
+    })
+
   }
+
+  //update cart count
+  updateCartCount(count: number) {
+
+    const user = this.getUserData();
+    if (!user)
+      return;
+
+    this.cartCountSubject.next(count);
+  }
+
+  //store the cart items based on the customerId In DB 
+  addToCart(data: AddToCartType) {
+    return this.http.post(this.baseURL, { _id: `addtocart_2_${uuidv4()}`, data: data }, { headers: this.headers })
+      .pipe(
+        map(() => {
+          const newCount = this.cartCountSubject.value + 1;
+          console.log("add to cart in service", newCount);
+
+          this.updateCartCount(newCount);
+        })
+      );
+  }
+
+  //delete the particular cart items
+  //update the cart count in the local storage
+  deleteCartItem(_id: string, _rev: string) {
+    const url = `${this.baseURL}/${_id}?rev=${_rev}`;
+    return this.http.delete(url, { headers: this.headers })
+      .pipe(
+        map(() => {
+          const newCount = Math.max(this.cartCountSubject.value - 1, 0);
+          console.log("delete in service", newCount);
+
+          this.updateCartCount(newCount);
+        })
+      );
+  }
+
 
   //get the current user cart items based on the customer Email
   getCurrentUserCartItems(email: string) {
@@ -114,7 +178,7 @@ export class AppService {
         .map((row: any) => row.doc)
         .filter((DataInCart: any) => DataInCart.data.cartStatus === "not purchased")
       )
-    );
+    )
   }
 
   //get all cart items
@@ -123,8 +187,8 @@ export class AppService {
     return this.http.get<any>(url, { headers: this.headers })
   }
 
-   //get the purchased products count
-   getPurchasedProductsCount() {
+  //get the purchased products count
+  getPurchasedProductsCount() {
     const url = `${this.baseURL}/_design/Views/_view/addtocart_by_productname?reduce=true&group=true`;
     return this.http.get<any>(url, { headers: this.headers })
   }
@@ -163,11 +227,7 @@ export class AppService {
     );
   }
 
-  //delete the particular cart items
-  deleteCartItem(_id: string, _rev: string) {
-    const url = `${this.baseURL}/${_id}?rev=${_rev}`;
-    return this.http.delete(url, { headers: this.headers });
-  }
+
 
   /* Eg: update address (or setting active address) 
   by using the post instead of put */
@@ -224,28 +284,28 @@ export class AppService {
   }
 
   //get the current user order line which is order details by cartId
-  getCurrentUserOrderDetails(CartId:string){
+  getCurrentUserOrderDetails(CartId: string) {
     const url = `${this.baseURL}/_design/Views/_view/orderdetails_by_cartid?key="${CartId}"&include_docs=true`;
     return this.http.get<any>(url, { headers: this.headers });
   }
 
   //get the order (header) by using the order id
-  getCurrentUserOrder(orderId:string){
-    const url=`${this.baseURL}/${orderId}`
+  getCurrentUserOrder(orderId: string) {
+    const url = `${this.baseURL}/${orderId}`
     return this.http.get<any>(url, { headers: this.headers });
   }
 
   //get the current user reviewed products
-  getReviewsByEmail(email:string){
-    const url=`${this.baseURL}/_design/Views/_view/productreviews_by_email?key="${email}"&include_docs=true`
+  getReviewsByEmail(email: string) {
+    const url = `${this.baseURL}/_design/Views/_view/productreviews_by_email?key="${email}"&include_docs=true`
     return this.http.get<any>(url, { headers: this.headers });
   }
 
   //get all ratings
-  getAllRatingProducts(){
-    const url=`${this.baseURL}/_design/Views/_view/productreviews_by_email?include_docs=true`
+  getAllRatingProducts() {
+    const url = `${this.baseURL}/_design/Views/_view/productreviews_by_email?include_docs=true`
     return this.http.get<any>(url, { headers: this.headers });
   }
-  
+
 
 }

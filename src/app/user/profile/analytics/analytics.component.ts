@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../../service/app.service';
-import { catchError, filter, forkJoin, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { ChartDataType } from '../../../types/chartDataType';
 import * as d3 from 'd3';
 
@@ -29,6 +29,9 @@ export class AnalyticsComponent implements OnInit {
   //extracted data from the raw data
   chartData: any[] = [];
 
+  //combined category and sub category name
+  combinedNames: any[] = []
+
   ngOnInit(): void {
     this.loadAllData();
     window.addEventListener("resize", () => this.onChartSelection());
@@ -49,24 +52,34 @@ export class AnalyticsComponent implements OnInit {
       products: this.sportiQService.getAllProducts().pipe(
         catchError(error => this.handleError('Products', error))
       ),
-      categories: this.sportiQService.getAllCategories().pipe(
-        catchError(error => this.handleError('Categories', error))
-      ),
       subcategories: this.sportiQService.getAllSubcategories().pipe(
         catchError(error => this.handleError('Subcategories', error))
+      ),
+      categories: this.sportiQService.getAllCategories().pipe(
+        catchError(error => this.handleError('Categories', error))
       ),
       review: this.sportiQService.getAllRatingProducts().pipe(
         catchError(error => this.handleError('ratings', error))
       )
 
     }).subscribe({
-      next: ({ orderDetails, orders, products, categories, subcategories, cartViews, review }) => {
+      next: ({ orderDetails, orders, products, subcategories, categories, cartViews, review }) => {
+
         this.orderDetailView = orderDetails ? orderDetails.rows.map((row: any) => row.doc) : [];
         this.orderView = orders ? orders.rows.map((row: any) => row.doc) : [];
-        this.cartView = cartViews ? cartViews.rows.map((row: any) => row.doc) : [];
-        this.productView = products ? products.rows.map((row: any) => row.doc) : [];
-        this.categoryView = categories ? categories.rows.map((row: any) => row.doc) : [];
-        this.subCategoryView = subcategories ? subcategories.rows.map((row: any) => row.doc) : [];
+
+        this.cartView = cartViews ? cartViews.rows.map((row: any) => row.doc)
+          .filter((d: any) => d.data.cartStatus === "purchased") : [];
+
+        this.productView = products ? products.rows.map((row: any) => row.doc)
+          .filter((p: any) => this.cartView.some((c: any) => c.data.productName === p.data.productName)) : [];
+
+        this.subCategoryView = subcategories ? subcategories.rows.map((row: any) => row.doc)
+          .filter((sub: any) => this.productView.some((p: any) => p.data.productSubCategoryId === sub._id)) : [];
+
+        this.categoryView = categories ? categories.rows.map((row: any) => row.doc)
+          .filter((category: any) => this.subCategoryView.some((s: any) => s.data.categoryId === category._id)) : [];
+
         this.reviewView = review ? review.rows.map((row: any) => row.doc) : [];
 
         console.log("Order Detail View:", this.orderDetailView);
@@ -197,6 +210,9 @@ export class AnalyticsComponent implements OnInit {
       };
     });
     console.log("Extracted Data: ", this.chartData);
+
+    const categoryAndSubCategory = new Set(this.chartData.map((data: any) => data.combinedName));
+    this.combinedNames = Array.from(categoryAndSubCategory);
   }
 
   //prepare data for the template charts
@@ -221,7 +237,7 @@ export class AnalyticsComponent implements OnInit {
 
 
   //filter products
-  selectedSubCategoryName:string='';
+  selectedCombinedName: string = '';
   filterProducts: any[] = [];
 
   //for error message
@@ -281,13 +297,6 @@ export class AnalyticsComponent implements OnInit {
   //check the chart is pie chart or not
   shouldNotPieChart() {
     return this.selectedChartType == "Pie Chart"
-  }
-
-  getFilterProductsBasedOnCombinedName() {
-    console.log("selected combined Name",this.selectedSubCategoryName);
-    
-    this.filterProducts = this.chartData.map((data) => data.combinedName);
-    console.log("Filtered Products", this.filterProducts);
   }
 
   fieldMapping: { [key: string]: keyof ChartDataType | 'orderedPeople' | 'averageRating' } = {
@@ -403,13 +412,22 @@ export class AnalyticsComponent implements OnInit {
     const yKey = this.fieldMapping[yField];
     const compareKey = this.selectedCompareField ? this.fieldMapping[this.selectedCompareField] : null;
 
-    const processedData = this.chartData.map(d => ({
+    //Filter based on the selected sub category name
+    let filterData = this.chartData;
+    if (this.selectedCombinedName) {
+      filterData = this.chartData.filter((data: any) => data.combinedName === this.selectedCombinedName);
+      console.log("filtered data ", filterData);
+
+    }
+
+    const processedData = filterData.map(d => ({
       xValue: d[xKey] ?? "Unknown",
       yValue: d[yKey] ?? 0,
       compareValue: compareKey ? d[compareKey] : null,
       orderedPeople: d.orderedPeople ?? 0
 
     }));
+
     /*
     const topOrderedData = processedData.sort((a, b) => b.orderedPeople - a.orderedPeople).slice(0, 10)
     SonarQube is giving the warning because .sort() changes the original array (processedData), which can 

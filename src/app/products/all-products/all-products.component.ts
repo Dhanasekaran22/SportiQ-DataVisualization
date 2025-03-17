@@ -49,8 +49,8 @@ export class AllProductsComponent implements OnInit {
 
   // navigate to product details
   navigateToProductDetails(productName:string){
-    console.log("product Name: ",productName.replace(/\s+/g, '-'));
-    this.router.navigate([`all-products/${productName.replace(/\s+/g, '-')}`]);
+    console.log("product Name in all products: ",productName.replace(/\s+/g, '--'));
+    this.router.navigate([`all-products/${productName.replace(/\s+/g, '--')}`]);
   }
 
   //toggle Availability filter section

@@ -91,24 +91,30 @@ nav {
     transform: scale(1.1); /* Slightly enlarges on hover */
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    nav {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .nav-links {
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .logo {
-        justify-content: center;
-        margin-top: 10px;
-    }
+.cart-container {
+  position: relative;
+  display: inline-block;
 }
+
+/* Cart Badge */
+.cart-badge {
+  position: absolute;
+  top: -6px; /* Moves the badge slightly above the cart icon */
+  right: -6px; /* Moves the badge slightly to the right */
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Adds a slight shadow for better visibility */
+}
+
+
 
 
 /* Centering the Dropdown Menu */

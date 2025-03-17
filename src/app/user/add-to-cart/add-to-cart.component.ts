@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CheckOutService } from '../../service/check-out.service';
 import { AppService } from '../../service/app.service';
 
 @Component({
@@ -10,8 +9,8 @@ import { AppService } from '../../service/app.service';
 export class AddToCartComponent implements OnInit {
 
   constructor(
-    private sportiQService:AppService,
-    private checkOut: CheckOutService) { }
+    private sportiQService: AppService
+  ) { }
 
   // Current User Details
   currentUser: { name: string, email: string } = {
@@ -41,7 +40,7 @@ export class AddToCartComponent implements OnInit {
   //get the current user cart items
   loadCurrentUserCartItems() {
 
-    if(!this.currentUser)
+    if (!this.currentUser)
       return;
 
     //check the current user is logged in or not
@@ -49,10 +48,12 @@ export class AddToCartComponent implements OnInit {
       this.sportiQService.getCurrentUserCartItems(this.currentUser.email).subscribe({
         next: (dataInCart) => {
           this.cartItems = dataInCart;
-
           console.log("current user Cart Items", this.cartItems);
 
           this.loadCartProductDetails();
+
+          console.log("in add to cart component set");
+
         },
         error: (error) => {
           alert("error on while fetching cart items");
@@ -60,7 +61,6 @@ export class AddToCartComponent implements OnInit {
         }
       });
     }
-
   }
 
   //get the cart product details 
@@ -71,7 +71,7 @@ export class AddToCartComponent implements OnInit {
       this.cartProductDetails = [];
       this.sportiQService.getCartProductDetails(this.cartItems).subscribe({
         next: (response) => {
-          this.cartProductDetails = response.map((detail:any)=>detail.data);
+          this.cartProductDetails = response.map((detail: any) => detail.data);
           console.log("cart product details: ", this.cartProductDetails);
           this.calculateTotals();
         },
@@ -130,7 +130,7 @@ export class AddToCartComponent implements OnInit {
   increaseQuantity(item: any) {
     item.data.quantity++;
 
-     //get the stock of the product
+    //get the stock of the product
     const productStock = this.cartProductDetails.find((dataInProductDetails: any) => dataInProductDetails.productName === item.data.productName).productStock;
 
     if (this.sportiQService.checkProductStock(item.data.quantity, productStock)) {

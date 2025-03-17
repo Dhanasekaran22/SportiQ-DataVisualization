@@ -13,14 +13,23 @@ export class NavbarComponent implements OnInit {
   categoriesAndSubCategories: any[] = []
 
   //show dropdown when hover the all products
-  isDropDownVisible=false;
+  isDropDownVisible = false;
 
-  constructor( private sportiQService:AppService,private route:Router) { };
+  //calculate the cart items count
+  cartCount=0;
+
+  constructor(private sportiQService: AppService, private route: Router) { };
 
   ngOnInit(): void {
     this.loadCategoriesWithSubCategories();
 
+    this.sportiQService.loadCartCount();
+    
+    this.sportiQService.cartCount$.subscribe(count=>{
+      this.cartCount=count;
+    })
   }
+
 
   //Getting all categories from the category view
   loadCategoriesWithSubCategories() {
@@ -29,21 +38,21 @@ export class NavbarComponent implements OnInit {
         const categoryList = response.rows.map((row: any) => ({
           category_id: row.id,
           categoryName: row.value,
-          categoryNavImage:row.doc.data.categoryNavImage,
-          categoryHomeImage:row.doc.data.categoryMainImage,
+          categoryNavImage: row.doc.data.categoryNavImage,
+          categoryHomeImage: row.doc.data.categoryMainImage,
           subCategories: []
         }));
         // console.log("category list",categoryList);
 
-        categoryList.forEach((category:any) => {
+        categoryList.forEach((category: any) => {
           // console.log(category.category_id);
           this.sportiQService.getSubcategoriesByCategoryId(category.category_id).subscribe({
-            next: (subResponse) => {              
-              category.subCategories = subResponse.rows.map((subRow: any)=> ({
+            next: (subResponse) => {
+              category.subCategories = subResponse.rows.map((subRow: any) => ({
                 subCategory_id: subRow.id,
                 subCategoryName: subRow.value
               }));
-              
+
             },
             error: (error) => {
               alert("Error Fetching subcategories");
@@ -53,9 +62,9 @@ export class NavbarComponent implements OnInit {
         })
 
         //store the category and subCategory array
-        this.categoriesAndSubCategories=categoryList;
-        console.log("Categories and subCategories",this.categoriesAndSubCategories);
-        
+        this.categoriesAndSubCategories = categoryList;
+        console.log("Categories and subCategories", this.categoriesAndSubCategories);
+
       },
       error: (error) => {
         alert("error on while fetching category");
@@ -64,19 +73,20 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  filterSubCategories(category:string,subCategory:string){
+  filterSubCategories(category: string, subCategory: string) {
     this.route.navigate([`collections/${category}/${subCategory}`]);
   }
 
-  filterCategories(category:string){
+  filterCategories(category: string) {
     this.route.navigate([`pages/${category}`]);
   }
 
-  showDropDown(){
-    this.isDropDownVisible=true;
+  showDropDown() {
+    this.isDropDownVisible = true;
   }
 
-  hideDropDown(){
-    this.isDropDownVisible=false;
+  hideDropDown() {
+    this.isDropDownVisible = false;
   }
+
 }

@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductDataService } from '../../service/product-data.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from '../../service/authentication.service';
 import { AddToCartType } from '../../types/addToCartType';
-import { CheckOutService } from '../../service/check-out.service';
 import { AppService } from '../../service/app.service';
 
 @Component({
@@ -13,7 +10,7 @@ import { AppService } from '../../service/app.service';
 })
 export class ProductDetailsComponent implements OnInit {
   constructor(
-    private sportiQService:AppService,
+    private sportiQService: AppService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -32,13 +29,19 @@ export class ProductDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.getLoggedUserDetails();
     this.route.params.subscribe(params => {
-      const productName = params['productName'].replace(/-/g, ' '); // replace '-' to space
-      console.log("product name", productName);
+      const productName = params['productName'].replace(/--/g, ' '); // replace '-' to space
+      console.log("product name in product details", productName);
       this.loadProductDetails(productName);
     });
   }
 
-  loadProductDetails(productName: string) {
+  //get the current logged user
+  getLoggedUserDetails() {
+    this.loggedUserDetails = this.sportiQService.getUserData();
+    console.log("Logged user Details: ", this.loggedUserDetails);
+  }
+
+  loadProductDetails(productName: string) {    
     this.sportiQService.getProductsByProductName(productName).subscribe({
       next: (response) => {
         this.productDetails = response.rows[0].doc.data
@@ -79,9 +82,6 @@ export class ProductDetailsComponent implements OnInit {
 
         if (existingCartItem) {
 
-          // Update the quantity of the existing item
-          // const updatedQuantity = existingCartItem.data.quantity + this.quantity;
-
           //prepare the updated cart item
           const updatedCartData = {
             _id: existingCartItem._id,
@@ -98,6 +98,7 @@ export class ProductDetailsComponent implements OnInit {
           //update the cart with new quantity
           this.sportiQService.updateCartItems(updatedCartData).subscribe({
             next: () => {
+              this.router.navigate(['/add-to-cart']);
               alert(`${existingCartItem.data.productName} 's quantity updated `);
             },
             error: (error) => {
@@ -120,7 +121,7 @@ export class ProductDetailsComponent implements OnInit {
           }
           this.sportiQService.addToCart(cartData).subscribe({
             next: (response) => {
-
+              this.router.navigate(['/add-to-cart']);
               alert("added to cart successfully");
             },
             error: (error) => {
@@ -139,12 +140,6 @@ export class ProductDetailsComponent implements OnInit {
 
 
 
-
-
-  getLoggedUserDetails() {
-    this.loggedUserDetails = this.sportiQService.getUserData();
-    console.log("Logged user Details: ", this.loggedUserDetails);
-  }
 
   increaseQuantity() {
     this.quantity++;

@@ -16,10 +16,11 @@
             <!--category Dropdown-->
             <div class="dropdown-menu" *ngIf="isDropDownVisible">
                 <div class="categories">
-                    <div class="category" *ngFor="let category of categoriesAndSubCategories" >
+                    <div class="category" *ngFor="let category of categoriesAndSubCategories">
                         <span (click)="filterCategories(category.categoryName)">{{category.categoryName}}</span>
                         <div class="subcategories">
-                            <a *ngFor="let subCategory of category.subCategories" (click)="filterSubCategories(category.categoryName,subCategory.subCategoryName)">
+                            <a *ngFor="let subCategory of category.subCategories"
+                                (click)="filterSubCategories(category.categoryName,subCategory.subCategoryName)">
                                 {{subCategory.subCategoryName}}
                             </a>
                         </div>
@@ -27,7 +28,7 @@
                 </div>
             </div>
         </li>
-        
+
         <li><a routerLink="/trending" class="color-red" routerLinkActive="active">TRENDING</a></li>
         <li><a routerLink="/offers" routerLinkActive="active">OFFERS</a></li>
         <li><a routerLink="/contact" routerLinkActive="active">CONTACT</a></li>
@@ -35,8 +36,15 @@
 
     <!-- Right: Icons -->
     <div class="logo right">
-        <img src="assets\logo\search 2.png" alt="search">
-        <img src="assets\logo\people.png" alt="user" routerLink="/profile">
-        <img src="assets\logo\shopping-bag.png" alt="cart" routerLink="/add-to-cart">
+        <img src="assets/logo/search 2.png" alt="search">
+        <img src="assets/logo/people.png" alt="user" routerLink="/profile">
+
+        <!-- Cart Icon with Badge -->
+        <div class="cart-container">
+            <img src="assets/logo/shopping-bag.png" alt="cart" routerLink="/add-to-cart">
+            <span class="cart-badge" *ngIf="cartCount>0">{{ cartCount }}</span>
+        </div>
+        
     </div>
+
 </nav>
