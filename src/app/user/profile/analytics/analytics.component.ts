@@ -644,8 +644,10 @@ export class AnalyticsComponent implements OnInit {
     const data = this.chartData.map(d => ({
       label: d[this.fieldMapping[this.selectedXField]] || "Unknown",
       value: d[yKey] || 0,
-    }));
+    })).slice(0,10);
 
+    console.log("processed pie chart data",data);
+    
     const container = d3.select("#chartContainer").node() as HTMLElement;
     const width = container.getBoundingClientRect().width || 600;
     const height = 400;

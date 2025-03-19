@@ -122,7 +122,7 @@ export class FilterProductsComponent implements OnInit {
   }
 
   navigateToProductDetails(productData: any) {
-    this.router.navigate([`product/${productData.productName.replace(/\s+/g, '-')}`])
+    this.router.navigate([`product/${productData.productName.replace(/\s+/g, '--')}`])
   }
 
 }

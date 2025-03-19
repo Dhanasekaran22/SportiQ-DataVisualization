@@ -88,7 +88,7 @@ export class AppService {
   }
 
   //get the particular product using productName
-  getProductsByProductName(productName: string) {    
+  getProductsByProductName(productName: string) {
     const url = `${this.baseURL}/_design/Views/_view/products_by_productname?key="${productName}"&include_docs=true`
     return this.http.get<any>(url, { headers: this.headers });
   }
@@ -114,7 +114,7 @@ export class AppService {
     const user = this.getUserData();
     if (!user)
       return;
-    
+
     let cartCount = 0;
     const cartKey = user.email;
 
@@ -187,6 +187,7 @@ export class AppService {
     return this.http.get<any>(url, { headers: this.headers })
   }
 
+  //trending products count
   //get the purchased products count
   getPurchasedProductsCount() {
     const url = `${this.baseURL}/_design/Views/_view/addtocart_by_productname?reduce=true&group=true`;
@@ -200,7 +201,7 @@ export class AppService {
   getCartProductDetails(cartItems: any[]): Observable<any[]> {
     const productRequests = cartItems.map(item =>
 
-      this.http.get<any>(`${this.baseURL}/_design/Views/_view/products_by_productname?key="${item.data.productName}"&include_docs=true`,
+      this.http.get<any>(`${this.baseURL}/_design/Views/_view/products_by_productname?key="${item.data.productName.toLowerCase()}"&include_docs=true`,
         { headers: this.headers }
       )
         .pipe(map(response => response.rows.map((row: any) => row.doc)[0]))
@@ -307,5 +308,10 @@ export class AppService {
     return this.http.get<any>(url, { headers: this.headers });
   }
 
+  // // get the search based products
+  getProductsBySearch(searchText: string): Observable<any> {
+    const url = `${this.baseURL}/_design/Views/_view/products_by_productname?startkey="${searchText.toLowerCase()}"&endkey="${searchText.toLowerCase()}\ufff0"&include_docs=true`
+    return this.http.get<any>(url, { headers: this.headers });
 
+  }
 }

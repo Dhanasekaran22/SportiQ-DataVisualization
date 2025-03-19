@@ -58,6 +58,9 @@ export class AllProductsComponent implements OnInit {
     this.isAvailable=!this.isAvailable;
   }
 
+  inStockCount:number=0
+  outOfStockCount=0;
+
   //filter products based on stock and price range
   filterProducts(stockStatus?:string){
    let filteredProducts=[...this.allProducts];
@@ -65,9 +68,11 @@ export class AllProductsComponent implements OnInit {
    //filter by stock availability
    if(stockStatus==='outOfStock'){
     filteredProducts=filteredProducts.filter(product=>product.productStock===0);
+    this.outOfStockCount=filteredProducts.length;
    }
    else if(stockStatus==='inStock'){
     filteredProducts=filteredProducts.filter(product=>product.productStock>0);
+    this.inStockCount=filteredProducts.length;
    }
 
    //filter by price range

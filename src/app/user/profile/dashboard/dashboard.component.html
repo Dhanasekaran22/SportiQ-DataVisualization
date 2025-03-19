@@ -1,25 +1,28 @@
 <div class="dashboard-container">
-    <mat-card class="metric-card">
-      <mat-card-content>
-        <div class="metric-content">
-          <mat-icon class="metric-icon">shopping_cart</mat-icon>
-          <div class="metric-text">
-            <h2>Total Orders</h2>
-            <p>{{ orderCount }}</p>
-          </div>
+  <mat-card class="metric-card">
+    <mat-card-content>
+      <div class="metric-content">
+        <mat-icon class="metric-icon">shopping_cart</mat-icon>
+        <div class="metric-text">
+          <h2>Total Orders</h2>
+          <p>{{ orderCount }}</p>
         </div>
-      </mat-card-content>
-    </mat-card>
-  
-    <mat-card class="metric-card">
-      <mat-card-content>
-        <div class="metric-content">
-          <mat-icon class="metric-icon" fontIcon="account_balance_wallet"></mat-icon>
-          <div class="metric-text">
-            <h2>Total Spending</h2>
-            <p>{{ totalSpending | currency:'INR':'symbol':'1.0-0'}}</p>
-          </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="metric-card">
+    <mat-card-content>
+      <div class="metric-content">
+        <mat-icon class="metric-icon" fontIcon="account_balance_wallet"></mat-icon>
+        <div class="metric-text">
+          <h2>Total Spending</h2>
+          <p>{{ totalSpending | currency:'INR':'symbol':'1.0-0'}}</p>
         </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<h2>Spending Trend (Daily Basis)</h2>
+<div id="chart"></div>

@@ -1,11 +1,3 @@
-<!-- <div *ngFor="let product of productDetails" class="product-card">
-    <img [src]="product.productImageUrl" alt="{{product.productName}}" class="product-image">
-    <h4>{{product.productName}}</h4>
-    <h3>₹{{product.productSellingPrice}}</h3>
-</div>
- -->
-
-
 
 <div class="product-container" >
   <div class="filter-container">
@@ -15,8 +7,8 @@
       <div class="filter-group">
         <h4 (click)="showAvailability()">AVAILABILITY</h4>
         <div *ngIf="isAvailable">
-          <label><input type="radio" name="stock" (change)="filterProducts('inStock')"> In stock ()</label><br>
-          <label><input type="radio" name="stock" (change)="filterProducts('outOfStock')"> Out of stock ()</label>
+          <label><input type="radio" name="stock" (change)="filterProducts('inStock')"> In stock <span *ngIf="inStockCount>0">({{inStockCount}})</span></label><br>
+          <label><input type="radio" name="stock" (change)="filterProducts('outOfStock')"> Out of stock <span *ngIf="outOfStockCount>0">({{outOfStockCount}})</span></label>
         </div>
         
       </div>

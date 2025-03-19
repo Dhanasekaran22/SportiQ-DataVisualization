@@ -16,6 +16,7 @@ import { OrdersComponent } from './user/profile/orders/orders.component';
 import { authGuardGuard } from './shared/auth-guard.guard';
 import { TrendingProductsComponent } from './user/trending-products/trending-products.component';
 import { AnalyzeProductsComponent } from './user/profile/analyze-products/analyze-products.component';
+import { DemoAnalyticsComponent } from './user/profile/demo-analytics/demo-analytics.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -28,7 +29,8 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'analytics', component: AnalyticsComponent },
-      { path: 'analyze-products', component: AnalyzeProductsComponent},
+      { path: 'analyze-products', component: AnalyzeProductsComponent },
+      {path:'demoAnalytics',component:DemoAnalyticsComponent},
       { path: 'orders', component: OrdersComponent },
       { path: '', redirectTo: 'orders', pathMatch: 'full' }
     ]

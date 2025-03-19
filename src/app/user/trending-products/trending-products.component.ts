@@ -13,7 +13,7 @@ export class TrendingProductsComponent implements OnInit {
   topProducts: any[] = [];
   topProductDetails: any[] = [];
 
-  constructor(private sportiQService: AppService,private router:Router) { }
+  constructor(private sportiQService: AppService, private router: Router) { }
 
   ngOnInit(): void {
     this.getPurchasedProductsCount();
@@ -25,7 +25,6 @@ export class TrendingProductsComponent implements OnInit {
       next: (response) => {
         this.topProducts = response.rows.map((row: any) => row)
           .sort((a: any, b: any) => b.value - a.value)
-          .slice(0, 6);
 
         console.log("Top products", this.topProducts);
         this.getTrendingProductDetails();
@@ -37,27 +36,26 @@ export class TrendingProductsComponent implements OnInit {
     });
   }
 
-
   //get the product details
   getTrendingProductDetails() {
     if (this.topProducts.length == 0) return;
 
     const productRequests = this.topProducts.map((topProduct: any) =>
-      this.sportiQService.getProductsByProductName(topProduct.key));
+      this.sportiQService.getProductsByProductName(topProduct.key.toLowerCase()));
 
     forkJoin(productRequests).subscribe({
-      next:(responses)=>{
-        this.topProductDetails=responses.map((response)=>response.rows[0].doc)
-        console.log("top product details",this.topProductDetails);
+      next: (responses) => {
+        this.topProductDetails = responses.map((response) => response.rows[0].doc)
+        console.log("top product details", this.topProductDetails);
       },
-      error:(error)=>{
+      error: (error) => {
         alert("error on while getting top 10 product details");
-        console.log("error on while getting top 10 product details",error);
+        console.log("error on while getting top 10 product details", error);
       }
     })
   }
 
-  navigateToProductDetails(productDetail:any){
+  navigateToProductDetails(productDetail: any) {
     this.router.navigate([`all-products/${productDetail.data.productName.replace(/\s+/g, '-')}`]);
   }
 

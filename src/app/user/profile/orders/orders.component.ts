@@ -105,7 +105,7 @@ export class OrdersComponent implements OnInit {
     if (this.purchasedCartItems.length === 0) return;
 
     const requests = this.purchasedCartItems.map((purchasedData: any) =>
-      this.sportiQService.getProductsByProductName(purchasedData.data.productName)
+      this.sportiQService.getProductsByProductName(purchasedData.data.productName.toLowerCase())
 
     );
     forkJoin(requests).subscribe({

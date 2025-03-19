@@ -42,8 +42,9 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   loadProductDetails(productName: string) {    
-    this.sportiQService.getProductsByProductName(productName).subscribe({
-      next: (response) => {
+    
+    this.sportiQService.getProductsByProductName(productName.toLowerCase()).subscribe({
+      next: (response) => {        
         this.productDetails = response.rows[0].doc.data
         console.log("Selected product details: ", this.productDetails);
       },

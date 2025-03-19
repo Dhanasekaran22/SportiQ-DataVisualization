@@ -1,6 +1,20 @@
 <div class="search-container">
-    <input type="text" [(ngModel)]="searchQuery" placeholder="Search for products..." class="search-input" />
+    <input type="text" [(ngModel)]="userInput" placeholder="Search for products..." class="search-input" (ngModelChange)="onSearch()">
     <button class="search-btn">
         <i class="fa fa-search"></i>
       </button>
 </div>
+
+<!-- Search Results Dropdown -->
+<ul class="search-results" *ngIf="filterProducts.length > 0">
+    <li *ngFor="let product of filterProducts" (click)="selectProduct(product)">
+        <img [src]="product.data.productImageUrl" alt="{{product.data.productName}}" class="product-image">
+        <div class="product-info">
+            <p class="product-name"> {{ product.data.productName }}</p>
+            <p class="product-price">{{product.data.discountedSellingPrice | currency :'INR'}}</p>
+        </div>
+    </li>
+</ul>
+
+<!-- No Results Found Message -->
+<p *ngIf="noResultsMessage" class="no-results">{{ noResultsMessage }}</p>

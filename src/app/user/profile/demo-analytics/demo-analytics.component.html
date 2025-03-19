@@ -1,0 +1,17 @@
+<div class="object-container" *ngFor="let obj of dataObjects; let i = index">
+    <!-- Object Name (Collapsible Header) -->
+    <div class="object-header" (click)="toggleExpand(i)">
+      <span>{{ obj.expanded ? '➖' : '➕' }}</span> {{ obj.name }}
+    </div>
+  
+    <!-- Object Fields as Buttons -->
+    <div *ngIf="obj.expanded" class="object-fields">
+      <button *ngFor="let field of obj.fields" class="field-button" (click)="onFieldClick(field)">
+        {{ field.displayName }}
+      </button>
+    </div>
+  </div>
+  
+  <!-- Selected Field Display -->
+  <p>Selected Field (Backend Key): {{ selectedField }}</p>
+  
